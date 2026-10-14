@@ -1,5 +1,6 @@
 import { createPersistedStore } from "@/lib/storage/persisted-store";
 import { SHAPE_NAMES, type CagedShape, type ShapeName } from "@/lib/theory/caged";
+import { nearestByCentre } from "./neck-geometry";
 
 // The selection is a shape name, so changing the root keeps the same shape.
 export const SHAPE_KEY = "nomad:chords:shape:v1";
@@ -17,12 +18,7 @@ export function parseShape(raw: string | null): ShapeName {
 
 // shapes are in neck order, so the strict < keeps the lower one on a tie.
 export function nearestShape(shapes: CagedShape[], fret: number): ShapeName {
-  let best = shapes[0];
-  for (const shape of shapes) {
-    const distance = Math.abs((shape.lowFret + shape.highFret) / 2 - fret);
-    if (distance < Math.abs((best.lowFret + best.highFret) / 2 - fret)) best = shape;
-  }
-  return best.name;
+  return nearestByCentre(shapes, fret).name;
 }
 
 export const shapeStore = createPersistedStore(SHAPE_KEY, parseShape, DEFAULT_SHAPE);
