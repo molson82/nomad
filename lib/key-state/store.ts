@@ -1,4 +1,5 @@
 import { isNote, type Note } from "@/lib/theory/notes";
+import { createPersistedStore } from "@/lib/storage/persisted-store";
 import { TOOLS, type Tool } from "@/lib/tools";
 
 export type KeyState = { linked: boolean; shared: Note; tools: Record<Tool, Note> };
@@ -47,47 +48,9 @@ export function withLinked(state: KeyState, tool: Tool, linked: boolean): KeySta
   return { linked: false, shared, tools: { circle: shared, chords: shared, scales: shared } };
 }
 
-// Module-level store read through useSyncExternalStore. Loaded lazily so the
-// server render (no localStorage) never touches it.
-let state: KeyState | null = null;
-const listeners = new Set<() => void>();
+const store = createPersistedStore(STORAGE_KEY, parseKeyState, DEFAULT_STATE);
 
-function load(): KeyState {
-  try {
-    return parseKeyState(localStorage.getItem(STORAGE_KEY));
-  } catch {
-    return DEFAULT_STATE; // storage blocked (e.g. Safari private mode): run in memory
-  }
-}
-
-export function getKeyState(): KeyState {
-  return (state ??= load());
-}
-
-export function getServerKeyState(): KeyState {
-  return DEFAULT_STATE;
-}
-
-export function updateKeyState(next: KeyState): void {
-  state = next;
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-  } catch {
-    // Storage blocked: the change still applies for this session.
-  }
-  listeners.forEach((listener) => listener());
-}
-
-export function subscribeKeyState(listener: () => void): () => void {
-  listeners.add(listener);
-  const onStorage = (event: StorageEvent) => {
-    if (event.key !== STORAGE_KEY) return;
-    state = parseKeyState(event.newValue);
-    listener();
-  };
-  window.addEventListener("storage", onStorage);
-  return () => {
-    listeners.delete(listener);
-    window.removeEventListener("storage", onStorage);
-  };
-}
+export const getKeyState = store.get;
+export const getServerKeyState = store.getServer;
+export const updateKeyState = store.set;
+export const subscribeKeyState = store.subscribe;
