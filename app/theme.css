@@ -1,0 +1,58 @@
+/*
+ * Same idea as Journal's theme.css: accent colors are derived once from a
+ * hue, so a tool switch is one attribute change. Two differences:
+ *  - each tool sets --accent-l too, since Decoder yellow needs far more
+ *    lightness than teal to read as itself;
+ *  - the derived colors are declared on `:root, [data-tool]`, because a
+ *    custom property's var() resolves where it is declared -- declaring them
+ *    only on :root would freeze them at the root's hue.
+ * Dark mode follows the system; there is no manual toggle.
+ */
+
+:root {
+  color-scheme: light dark;
+
+  --accent-hue: 95;
+  --accent-l: 86%;
+
+  --color-bg: oklch(96.5% 0.014 85);
+  --color-surface: oklch(99.5% 0.004 85);
+  --color-fretboard: oklch(85% 0.05 75);
+  --color-border: oklch(87% 0.018 80);
+  --color-hover-bg: oklch(93% 0.018 85);
+  --color-ink: oklch(19% 0.006 260);
+  --color-text-primary: var(--color-ink);
+  --color-text-secondary: oklch(43% 0.012 260);
+  --color-text-tertiary: oklch(57% 0.012 260);
+  --color-on-accent: var(--color-ink);
+}
+
+[data-tool="circle"] { --accent-hue: 95; --accent-l: 86%; }  /* Decoder yellow */
+[data-tool="chords"] { --accent-hue: 38; --accent-l: 66%; }  /* compass orange-red */
+[data-tool="scales"] { --accent-hue: 185; --accent-l: 72%; } /* teal */
+
+:root,
+[data-tool] {
+  --color-accent: oklch(var(--accent-l) 0.17 var(--accent-hue));
+  --color-accent-ink: oklch(46% 0.13 var(--accent-hue));
+  --color-accent-tint: oklch(93% 0.05 var(--accent-hue));
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: oklch(18% 0.008 260);
+    --color-surface: oklch(23% 0.01 260);
+    --color-fretboard: oklch(42% 0.045 70);
+    --color-border: oklch(100% 0 0 / 0.1);
+    --color-hover-bg: oklch(29% 0.012 260);
+    --color-text-primary: oklch(94% 0.006 85);
+    --color-text-secondary: oklch(74% 0.012 260);
+    --color-text-tertiary: oklch(60% 0.012 260);
+  }
+
+  :root,
+  [data-tool] {
+    --color-accent-ink: oklch(82% 0.14 var(--accent-hue));
+    --color-accent-tint: oklch(31% 0.06 var(--accent-hue));
+  }
+}

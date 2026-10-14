@@ -1,0 +1,11 @@
+@import "./theme.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  /* No 300ms double-tap-zoom wait when tapping notes quickly. */
+  touch-action: manipulation;
+  /* The shell is fixed chrome; rubber-banding it reads as broken on iOS. */
+  overscroll-behavior: none;
+}

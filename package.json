@@ -1,0 +1,41 @@
+{
+  "name": "nomad",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@9.12.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "preview": "serve out -l 3000",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test:unit": "vitest run",
+    "test:e2e": "playwright test",
+    "icons": "node scripts/make-icons.mjs"
+  },
+  "dependencies": {
+    "lucide-react": "^0.451.0",
+    "next": "^15.5.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.1.0",
+    "@playwright/test": "^1.47.0",
+    "@testing-library/jest-dom": "^6.5.0",
+    "@testing-library/react": "^16.0.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "autoprefixer": "^10.4.0",
+    "eslint": "^9.0.0",
+    "eslint-config-next": "^15.0.0",
+    "jsdom": "^25.0.0",
+    "postcss": "^8.4.0",
+    "serve": "14.2.4",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}
