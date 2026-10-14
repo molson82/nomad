@@ -3,7 +3,7 @@
 ## Project
 
 Nomad: a personal, mobile-first guitar theory app that digitizes three Noisy Clan "Decoder" tools
-(Circle of Fifths, Chord Compass, Scale Compass). `nomad.md` has the product vision. It is a
+(Circle of Fifths, Chord Compass, Scale Compass). `nomad.md` (local only, gitignored) has the product vision. It is a
 fully client-side, offline-capable PWA: Next.js (App Router) static export + TypeScript + Tailwind 3.
 There is no backend, auth or database. Structure and tooling follow the sibling `journal` app.
 
