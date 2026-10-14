@@ -28,4 +28,11 @@ describe("spelling", () => {
     expect(formatNote({ letter: "C", accidental: 0 })).toBe("C");
     expect(formatNote({ letter: "F", accidental: 2 })).toBe("F♯♯");
   });
+
+  it("shows E♯, B♯, F♭ and C♭ as the natural note a player would name", () => {
+    expect(formatNote({ letter: "E", accidental: 1 })).toBe("F");
+    expect(formatNote({ letter: "B", accidental: 1 })).toBe("C");
+    expect(formatNote({ letter: "F", accidental: -1 })).toBe("E");
+    expect(formatNote({ letter: "C", accidental: -1 })).toBe("B");
+  });
 });

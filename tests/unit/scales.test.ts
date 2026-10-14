@@ -32,6 +32,9 @@ describe("views", () => {
     expect(names("G", MAJ_BLUES)).toBe("G A B♭ B D E");
     expect(names("G", MIN_BLUES)).toBe("E G A B♭ B D");
     expect(names("A", MAJ_BLUES)).toBe("A B C C♯ E F♯");
+    expect(names("C#", MAJ_BLUES)).toBe("D♭ E♭ E F A♭ B♭"); // not F♭
+    expect(names("Ab", MIN_BLUES)).toBe("F A♭ B♭ B C E♭"); // A♭ major's blue note: not C♭
+    expect(names("F#", MAJOR)).toBe("F♯ G♯ A♯ B C♯ D♯ F"); // not E♯
   });
 
   it("names all six views", () => {
