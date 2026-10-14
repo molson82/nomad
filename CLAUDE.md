@@ -24,6 +24,21 @@ pnpm icons                                   # re-render public/icons/*.png from
 
 To test offline behavior by hand, use `pnpm build && pnpm preview`, never `pnpm dev`.
 
+## Deployment
+
+Hosted on **Vercel** through its GitHub integration — there is no `vercel.json`; project settings live in
+the Vercel dashboard.
+
+- Every commit on a PR gets a **Preview** deployment (the PR's "Vercel" and "Vercel Preview Comments"
+  checks); every merge to `main` deploys **Production**. CI (`.github/workflows/ci.yml`) still only tests —
+  it doesn't deploy.
+- Deployment URLs are behind Vercel Authentication, so open them while signed in to Vercel.
+- Offline support depends on the full `pnpm build` (it runs `scripts/build-sw.mjs` after `next build`). To
+  confirm a deployment ran it, open `/sw.js` on it: it should start with `const PRECACHE = [` and contain
+  `const VERSION = "<hash>"`, not `self.__PRECACHE__`. If it doesn't, set the Vercel project's Build Command
+  to `pnpm build`.
+- iOS snapshots the home-screen icon when the app is added; after an icon change, remove and re-add Nomad.
+
 ## Architecture
 
 - **Routes:** `/circle/`, `/chords/`, `/scales/` (`trailingSlash: true`). `/` redirects on the client to

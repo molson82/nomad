@@ -33,6 +33,7 @@ cycle afterwards.
 - The wheel, fretboard and scale visuals, and any theory beyond the 12 note names.
 - Backend, auth, accounts, sync. The app is fully client-side.
 - Deployment. The host is undecided; the build produces a static `out/` that any static host can serve.
+  *(Update 2026-10-14: hosted on Vercel via its GitHub integration — see Deployment in `CLAUDE.md`.)*
 - Key in the URL / shareable links. Add later if wanted.
 - A settings page or manual theme toggle. Dark mode follows the system.
 
@@ -246,7 +247,8 @@ Tokens only. The finished tool visuals belong to the tool specs (via a frontend-
 - `lint-typecheck-unit`: install, `pnpm lint`, `pnpm typecheck`, `pnpm test:unit`.
 - `e2e`: install, restore the `.next/cache` cache, `pnpm exec playwright install --with-deps chromium webkit`,
   `pnpm test:e2e`.
-- No deploy job until a host is chosen.
+- No deploy job until a host is chosen. *(Update 2026-10-14: Vercel deploys PR previews and `main` itself;
+  CI still only tests.)*
 
 ## Docs
 
