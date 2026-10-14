@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { DM_Sans, Oswald } from "next/font/google";
+import { AppShell } from "@/components/layout/app-shell";
 import "./globals.css";
 
 // next/font self-hosts both families in out/, so type renders offline too.
@@ -32,7 +33,9 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${dmSans.variable} ${oswald.variable}`}>
-      <body className="bg-bg font-sans text-text-primary antialiased">{children}</body>
+      <body className="bg-bg font-sans text-text-primary antialiased">
+        <AppShell>{children}</AppShell>
+      </body>
     </html>
   );
 }
