@@ -12,4 +12,10 @@ describe("MajorMinorToggle", () => {
     fireEvent.click(within(group).getByRole("button", { name: "Major" }));
     expect(onChange).toHaveBeenCalledWith("major");
   });
+
+  it("presses neither while a progression chord is shown", () => {
+    render(<MajorMinorToggle value={null} onChange={() => {}} />);
+    const buttons = within(screen.getByRole("group", { name: "Major or minor" })).getAllByRole("button");
+    expect(buttons.map((b) => b.getAttribute("aria-pressed"))).toEqual(["false", "false"]);
+  });
 });

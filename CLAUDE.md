@@ -66,6 +66,10 @@ the Vercel dashboard.
   stored by *name* (`nomad:chords:shape:v1`) so it survives root changes; switching Major ↔ Minor picks the
   shape nearest the current window. The overview is one SVG `viewBox` from
   `neck-geometry.ts` that scales to every screen size.
+  When the Circle has a progression, a strip under the switch walks its chords (`progressionSteps`,
+  spelled by `diatonicChords`; vii° is skipped) without changing the key; the step is per tool in
+  `nomad:chords:step:v1` and moving between chords keeps the nearest window (`shapeNear`). The Circle's
+  "See on the neck" / "Scale for … major" links (`lib/circle/jumps.ts`) set the target tool's key first.
 - **Scale Compass (`components/scales/`, `lib/scales/`, `lib/theory/scales.ts`):** the root is always the
   major tonic; Minor is the relative minor (⑥), re-numbered from its own root. Six views (Major/Minor ×
   Scale/Pentatonic/Blues) come from one major scale. Positions are ten fixed templates — five CAGED

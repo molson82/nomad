@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { RootPicker } from "@/components/chords/root-picker";
+import { progressionSteps } from "@/lib/chords/progression-chords";
 
 describe("RootPicker", () => {
   it("names the chord and spells its notes", () => {
@@ -34,5 +35,12 @@ describe("RootPicker", () => {
     render(<RootPicker root="C#" quality="minor" onStep={() => {}} />);
     expect(screen.getByRole("heading", { level: 2, name: "B♭ minor" })).toBeInTheDocument();
     expect(screen.getByText("B♭ · D♭ · F")).toBeInTheDocument();
+  });
+
+  it("names a progression chord and its place in the key", () => {
+    render(<RootPicker root="G" quality="major" step={progressionSteps("G", [5])[0]} onStep={() => {}} />);
+    expect(screen.getByRole("heading", { level: 2, name: "D major" })).toBeInTheDocument();
+    expect(screen.getByText("D · F♯ · A")).toBeInTheDocument();
+    expect(screen.getByText("V in G major")).toBeInTheDocument();
   });
 });
