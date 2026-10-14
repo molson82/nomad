@@ -1,10 +1,14 @@
 "use client";
 
+import { useRef } from "react";
+import { MajorMinorToggle } from "@/components/fretboard/major-minor-toggle";
+import { switchQualityShape, type SwitchMemo } from "@/lib/chords/quality-store";
 import { nearestShape } from "@/lib/chords/shape-store";
+import { useChordQuality } from "@/lib/chords/use-chord-quality";
 import { useSelectedShape } from "@/lib/chords/use-selected-shape";
 import { useToolKey } from "@/lib/key-state/hooks";
 import { cagedShapes } from "@/lib/theory/caged";
-import { chordTones, majorTriad } from "@/lib/theory/fretboard";
+import { chordTones, triad, type Quality } from "@/lib/theory/fretboard";
 import { stepNote } from "@/lib/theory/notes";
 import { formatNote } from "@/lib/theory/spelling";
 import { FocusCard } from "./focus-card";
@@ -14,16 +18,26 @@ import { ShapeChips } from "./shape-chips";
 
 export function ChordCompass() {
   const [root, setRoot] = useToolKey("chords");
+  const [quality, setQuality] = useChordQuality();
+  const lastSwitch = useRef<SwitchMemo>(null);
   const [shapeName, setShapeName] = useSelectedShape();
-  const shapes = cagedShapes(root);
+  const shapes = cagedShapes(root, quality);
   const index = shapes.findIndex((s) => s.name === shapeName);
   const shape = shapes[index];
-  const chordName = `${formatNote(majorTriad(root)[0])} major`;
+  const chordName = `${formatNote(triad(root, quality)[0])} ${quality}`;
   const chips = <ShapeChips shapes={shapes} selected={shapeName} onSelect={setShapeName} />;
 
   const stepShape = (direction: 1 | -1) => {
     const next = shapes[index + direction];
     if (next) setShapeName(next.name);
+  };
+
+  const switchQuality = (next: Quality) => {
+    if (next === quality) return;
+    const result = switchQualityShape(root, quality, shape.name, next, lastSwitch.current);
+    lastSwitch.current = result.memo;
+    setShapeName(result.name);
+    setQuality(next);
   };
 
   return (
@@ -33,10 +47,13 @@ export function ChordCompass() {
         Chord Compass
       </h1>
       <div className="flex flex-col gap-3 md:gap-5">
-        <RootPicker root={root} onStep={(direction) => setRoot(stepNote(root, direction))} />
+        <RootPicker root={root} quality={quality} onStep={(direction) => setRoot(stepNote(root, direction))} />
+        <div className="flex">
+          <MajorMinorToggle value={quality} onChange={switchQuality} />
+        </div>
         <section aria-label="Whole neck" className="flex flex-col gap-2 rounded-[20px] border-2 border-accent bg-surface p-2 md:p-3">
           <NeckOverview
-            tones={chordTones(root)}
+            tones={chordTones(root, quality)}
             shape={shape}
             chordName={chordName}
             onPickFret={(fret) => setShapeName(nearestShape(shapes, fret))}

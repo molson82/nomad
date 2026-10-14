@@ -22,7 +22,7 @@ export function NeckOverview({ tones, shape, chordName, onPickFret }: NeckOvervi
       }))}
       windowLow={shape.lowFret}
       windowHigh={shape.highFret}
-      ariaLabel={`${chordName} across the neck, ${shape.name}-shape at frets ${shape.lowFret} to ${shape.highFret}`}
+      ariaLabel={`${chordName} across the neck, ${shape.label}-shape at frets ${shape.lowFret} to ${shape.highFret}`}
       onPickFret={onPickFret}
     />
   );

@@ -60,9 +60,11 @@ the Vercel dashboard.
   settled; reduced motion jumps). The progression is degrees in `nomad:circle:progression:v1`, so turning
   the wheel transposes it. Both stores use `lib/storage/persisted-store.ts`.
 - **Chord Compass (`components/chords/`, `lib/chords/`, `lib/theory/fretboard.ts`, `lib/theory/caged.ts`):**
-  major chords only, frets 0–15 (one past the device so every shape is complete). CAGED shapes are five
-  templates slid to the root (`cagedShapes`), sorted up the neck. The selected shape is stored by *name*
-  (`nomad:chords:shape:v1`) so it survives root changes. The overview is one SVG `viewBox` from
+  major and minor chords (Minor is the key's relative minor, as in Scale Compass; stored per tool in
+  `nomad:chords:quality:v1`), frets 0–15 (one past the device so every shape is complete). CAGED shapes are
+  five templates per quality slid to the root (`cagedShapes`), sorted up the neck. The selected shape is
+  stored by *name* (`nomad:chords:shape:v1`) so it survives root changes; switching Major ↔ Minor picks the
+  shape nearest the current window. The overview is one SVG `viewBox` from
   `neck-geometry.ts` that scales to every screen size.
 - **Scale Compass (`components/scales/`, `lib/scales/`, `lib/theory/scales.ts`):** the root is always the
   major tonic; Minor is the relative minor (⑥), re-numbered from its own root. Six views (Major/Minor ×

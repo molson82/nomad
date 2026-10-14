@@ -9,31 +9,32 @@ export const STRING_ORDINALS: readonly string[] = ["6th", "5th", "4th", "3rd", "
 // The device stops at 13; 15 keeps every CAGED shape complete for every root.
 export const MAX_FRET = 15;
 
-export type Role = "R" | "3" | "5";
+export type Quality = "major" | "minor";
+export type Role = "R" | "♭3" | "3" | "5";
 export type ChordTone = { string: number; fret: number; role: Role; note: SpelledNote };
 
-const ROLES: Role[] = ["R", "3", "5"];
+const ROLES: Record<Quality, Role[]> = { major: ["R", "3", "5"], minor: ["R", "♭3", "5"] };
 
-// Spelled as the Circle spells the key (C# → D♭ F A♭).
-export function majorTriad(root: Note): [SpelledNote, SpelledNote, SpelledNote] {
+// Spelled as the Circle spells the key (C# → D♭ F A♭). Minor is the key's relative minor: ⑥ ① ③.
+export function triad(root: Note, quality: Quality = "major"): [SpelledNote, SpelledNote, SpelledNote] {
   const scale = majorScale(circleKeyFor(root));
-  return [scale[0], scale[2], scale[4]];
+  return quality === "major" ? [scale[0], scale[2], scale[4]] : [scale[5], scale[0], scale[2]];
 }
 
-export function toneAt(triad: readonly SpelledNote[], string: number, fret: number): ChordTone {
+export function toneAt(chord: readonly SpelledNote[], string: number, fret: number, quality: Quality = "major"): ChordTone {
   const pitch = (TUNING[string] + fret) % 12;
-  const i = triad.findIndex((note) => pitchClassOf(note) === pitch);
+  const i = chord.findIndex((note) => pitchClassOf(note) === pitch);
   if (i < 0) throw new Error(`string ${string} fret ${fret} is not a chord tone`);
-  return { string, fret, role: ROLES[i], note: triad[i] };
+  return { string, fret, role: ROLES[quality][i], note: chord[i] };
 }
 
-export function chordTones(root: Note): ChordTone[] {
-  const triad = majorTriad(root);
-  const pitches = triad.map(pitchClassOf);
+export function chordTones(root: Note, quality: Quality = "major"): ChordTone[] {
+  const chord = triad(root, quality);
+  const pitches = chord.map(pitchClassOf);
   const tones: ChordTone[] = [];
   TUNING.forEach((open, string) => {
     for (let fret = 0; fret <= MAX_FRET; fret++) {
-      if (pitches.includes((open + fret) % 12)) tones.push(toneAt(triad, string, fret));
+      if (pitches.includes((open + fret) % 12)) tones.push(toneAt(chord, string, fret, quality));
     }
   });
   return tones;

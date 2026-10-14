@@ -16,11 +16,11 @@ export function FocusCard({ shape, shapes, chordName, onStep }: FocusCardProps) 
   const next = shapes[index + 1];
   return (
     <SharedFocusCard
-      regionLabel={`${shape.name}-shape, frets ${shape.lowFret} to ${shape.highFret}`}
-      title={`${shape.name}-shape`}
+      regionLabel={`${shape.label}-shape, frets ${shape.lowFret} to ${shape.highFret}`}
+      title={`${shape.label}-shape`}
       subtitle={`frets ${shape.lowFret}–${shape.highFret} · root on the ${STRING_ORDINALS[shape.rootString]} string`}
-      previousLabel={previous ? `Previous shape: ${previous.name}-shape` : "Previous shape"}
-      nextLabel={next ? `Next shape: ${next.name}-shape` : "Next shape"}
+      previousLabel={previous ? `Previous shape: ${previous.label}-shape` : "Previous shape"}
+      nextLabel={next ? `Next shape: ${next.label}-shape` : "Next shape"}
       canPrevious={!!previous}
       canNext={!!next}
       count={shapes.length}
