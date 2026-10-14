@@ -18,7 +18,7 @@ export function ChordDiagram({ shape, chordName }: { shape: CagedShape; chordNam
       }))}
       lowFret={shape.lowFret}
       highFret={shape.highFret}
-      ariaLabel={`${chordName}, ${shape.name}-shape, frets ${shape.lowFret} to ${shape.highFret}`}
+      ariaLabel={`${chordName}, ${shape.label}-shape, frets ${shape.lowFret} to ${shape.highFret}`}
       showMuted
       openStyle="hollow"
       showNoteNames

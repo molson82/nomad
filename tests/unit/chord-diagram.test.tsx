@@ -53,4 +53,12 @@ describe("ChordDiagram", () => {
     expect(screen.getByText("6th string, fret 3, G, root")).toBeInTheDocument();
     expect(screen.getByText("3rd string, fret 4, B, 3rd")).toBeInTheDocument();
   });
+
+  it("labels the minor third ♭3 and reads it as flat 3rd", () => {
+    const dm = cagedShapes("G", "minor").find((s) => s.name === "D")!;
+    render(<ChordDiagram shape={dm} chordName="E minor" />);
+    expect(screen.getByRole("img", { name: "E minor, Dm-shape, frets 2 to 5" })).toBeInTheDocument();
+    expect(screen.getByText("♭3")).toBeInTheDocument();
+    expect(screen.getByText("1st string, fret 3, G, flat 3rd")).toBeInTheDocument();
+  });
 });

@@ -24,4 +24,18 @@ describe("ShapeChips", () => {
     fireEvent.click(screen.getByRole("button", { name: "A-shape, frets 10 to 12" }));
     expect(onSelect).toHaveBeenCalledWith("A");
   });
+
+  it("names minor shapes with an m", () => {
+    render(<ShapeChips shapes={cagedShapes("G", "minor")} selected="D" onSelect={() => {}} />);
+    const chips = within(screen.getByRole("group", { name: "CAGED shapes up the neck" })).getAllByRole("button");
+    expect(chips.map((c) => c.getAttribute("aria-label"))).toEqual([
+      "Em-shape, frets 0 to 2",
+      "Dm-shape, frets 2 to 5",
+      "Cm-shape, frets 4 to 7",
+      "Am-shape, frets 7 to 9",
+      "Gm-shape, frets 9 to 12",
+    ]);
+    expect(chips[1]).toHaveAttribute("aria-pressed", "true");
+    expect(chips[1]).toHaveTextContent("Dm2–5");
+  });
 });

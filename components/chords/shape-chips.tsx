@@ -13,9 +13,9 @@ export function ShapeChips({ shapes, selected, onSelect }: ShapeChipsProps) {
       groupLabel="CAGED shapes up the neck"
       items={shapes.map((s) => ({
         id: s.name,
-        label: s.name,
+        label: s.label,
         sub: `${s.lowFret}–${s.highFret}`,
-        ariaLabel: `${s.name}-shape, frets ${s.lowFret} to ${s.highFret}`,
+        ariaLabel: `${s.label}-shape, frets ${s.lowFret} to ${s.highFret}`,
       }))}
       selected={selected}
       onSelect={(id) => onSelect(id as ShapeName)}

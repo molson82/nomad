@@ -30,4 +30,14 @@ describe("FocusCard", () => {
     rerender(<FocusCard shape={named("A")} shapes={shapes} chordName="G major" onStep={() => {}} />);
     expect(screen.getByRole("button", { name: "Next shape" })).toBeDisabled();
   });
+
+  it("titles minor shapes with an m", () => {
+    const minor = cagedShapes("G", "minor");
+    const dm = minor.find((s) => s.name === "D")!;
+    render(<FocusCard shape={dm} shapes={minor} chordName="E minor" onStep={() => {}} />);
+    expect(screen.getByRole("region", { name: "Dm-shape, frets 2 to 5" })).toBeInTheDocument();
+    expect(screen.getByText("frets 2–5 · root on the 4th string")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Previous shape: Em-shape" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Next shape: Cm-shape" })).toBeEnabled();
+  });
 });

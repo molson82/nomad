@@ -33,7 +33,7 @@ export function ChordCompass() {
         Chord Compass
       </h1>
       <div className="flex flex-col gap-3 md:gap-5">
-        <RootPicker root={root} onStep={(direction) => setRoot(stepNote(root, direction))} />
+        <RootPicker root={root} quality="major" onStep={(direction) => setRoot(stepNote(root, direction))} />
         <section aria-label="Whole neck" className="flex flex-col gap-2 rounded-[20px] border-2 border-accent bg-surface p-2 md:p-3">
           <NeckOverview
             tones={chordTones(root)}
