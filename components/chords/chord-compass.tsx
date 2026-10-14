@@ -2,6 +2,8 @@
 
 import { useRef } from "react";
 import { MajorMinorToggle } from "@/components/fretboard/major-minor-toggle";
+import { InfoButton } from "@/components/notes/info-button";
+import { cagedNote } from "@/lib/notes/chord-notes";
 import { useProgression } from "@/lib/circle/use-progression";
 import { progressionSteps } from "@/lib/chords/progression-chords";
 import { switchQualityShape, type SwitchMemo } from "@/lib/chords/quality-store";
@@ -94,7 +96,13 @@ export function ChordCompass() {
               to the shape under the pointer.
             </p>
           </div>
-          <FocusCard shape={shape} shapes={shapes} chordName={chordName} onStep={stepShape} />
+          <FocusCard
+            shape={shape}
+            shapes={shapes}
+            chordName={chordName}
+            onStep={stepShape}
+            info={<InfoButton label="About CAGED shapes" note={cagedNote(chord, chordQuality, shapes)} />}
+          />
         </div>
       </div>
     </div>

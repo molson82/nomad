@@ -1,6 +1,8 @@
 "use client";
 
 import { FocusCard } from "@/components/fretboard/focus-card";
+import { InfoButton } from "@/components/notes/info-button";
+import { pentatonicNote } from "@/lib/notes/scale-notes";
 import { FretDiagram } from "@/components/fretboard/fret-diagram";
 import { Neck } from "@/components/fretboard/neck";
 import { PositionChips } from "@/components/fretboard/position-chips";
@@ -54,7 +56,11 @@ export function ScaleCompass() {
       </h1>
       <div className="flex flex-col gap-3 md:gap-5">
         <ScaleHeader root={root} view={view} onStep={(direction) => setRoot(stepNote(root, direction))} />
-        <ViewToggles view={view} onChange={update} />
+        <ViewToggles
+          view={view}
+          onChange={update}
+          info={<InfoButton label="About pentatonic and blues" note={pentatonicNote(root, view.tonality)} />}
+        />
         <section aria-label="Whole neck" className="flex flex-col gap-2 rounded-[20px] border-2 border-accent bg-surface p-2 md:p-3">
           <Neck
             markers={neckNotes(root, view).map((n) => ({

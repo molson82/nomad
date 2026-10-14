@@ -23,4 +23,10 @@ describe("ScaleHeader", () => {
     fireEvent.click(screen.getByRole("button", { name: "Next root" }));
     expect(onStep).toHaveBeenCalledWith(1);
   });
+
+  it("explains how the minor scale is built", () => {
+    render(<ScaleHeader root="G" view={{ tonality: "minor", type: "scale" }} onStep={() => {}} />);
+    fireEvent.click(screen.getByRole("button", { name: "About how the scale is built" }));
+    expect(screen.getByRole("dialog", { name: "Building E minor" })).toHaveTextContent("♭3 ♭6 ♭7");
+  });
 });

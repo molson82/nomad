@@ -24,3 +24,9 @@ body {
     transition: none;
   }
 }
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+}

@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { FocusCard as SharedFocusCard } from "@/components/fretboard/focus-card";
 import type { CagedShape } from "@/lib/theory/caged";
 import { STRING_ORDINALS } from "@/lib/theory/fretboard";
@@ -8,14 +9,16 @@ interface FocusCardProps {
   shapes: CagedShape[]; // neck order
   chordName: string;
   onStep: (direction: 1 | -1) => void;
+  info?: ReactNode;
 }
 
-export function FocusCard({ shape, shapes, chordName, onStep }: FocusCardProps) {
+export function FocusCard({ shape, shapes, chordName, onStep, info }: FocusCardProps) {
   const index = shapes.findIndex((s) => s.name === shape.name);
   const previous = shapes[index - 1];
   const next = shapes[index + 1];
   return (
     <SharedFocusCard
+      titleAction={info}
       regionLabel={`${shape.label}-shape, frets ${shape.lowFret} to ${shape.highFret}`}
       title={`${shape.label}-shape`}
       subtitle={`frets ${shape.lowFret}–${shape.highFret} · root on the ${STRING_ORDINALS[shape.rootString]} string`}
