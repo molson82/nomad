@@ -3,7 +3,13 @@ import { expect, test, type Page } from "@playwright/test";
 const root = (page: Page, note: string) =>
   page.getByRole("group", { name: "Root note" }).getByRole("button", { name: note, exact: true });
 const toggle = (page: Page) => page.getByRole("button", { name: "Link key across tools" });
-const go = (page: Page, label: string) => page.getByRole("link", { name: label }).click();
+// Waits for the navigation to land: several assertions below hold on both the
+// old and new page, so without this they can pass before the route changes.
+const go = async (page: Page, label: string) => {
+  const link = page.getByRole("link", { name: label });
+  await link.click();
+  await expect(link).toHaveAttribute("aria-current", "page");
+};
 
 test("tools keep their own key until linked", async ({ page }) => {
   await page.goto("/circle/");
