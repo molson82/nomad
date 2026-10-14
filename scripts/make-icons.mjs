@@ -4,15 +4,22 @@
 import { mkdir } from "node:fs/promises";
 import { chromium } from "@playwright/test";
 
+// "Compass of three": a ring in the three tools' colours (Circle yellow, Chords
+// orange-red, Scales teal) around a compass needle. Design: the "App Icon" page
+// of the Nomad App Design canvas.
+const BACKGROUND = "#161718";
 const MARK = `
-  <circle cx="256" cy="256" r="150" fill="none" stroke="#141414" stroke-width="44"/>
-  <circle cx="256" cy="106" r="58" fill="#141414"/>
-  <circle cx="256" cy="106" r="24" fill="#FFD21F"/>`;
+  <circle cx="256" cy="256" r="168" fill="none" stroke="#FFD21F" stroke-width="48" stroke-dasharray="338 718" transform="rotate(-86 256 256)"/>
+  <circle cx="256" cy="256" r="168" fill="none" stroke="#E4572E" stroke-width="48" stroke-dasharray="338 718" transform="rotate(34 256 256)"/>
+  <circle cx="256" cy="256" r="168" fill="none" stroke="#15A69A" stroke-width="48" stroke-dasharray="338 718" transform="rotate(154 256 256)"/>
+  <polygon points="256,124 288,256 224,256" fill="#F6F1E7"/>
+  <polygon points="224,256 288,256 256,388" fill="#6B7079"/>
+  <circle cx="256" cy="256" r="18" fill="#161718" stroke="#F6F1E7" stroke-width="6"/>`;
 
 // scale < 1 keeps the mark inside the maskable safe zone (a centered circle, 80% of the width).
 const svg = (size, scale) => `
   <svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 512 512">
-    <rect width="512" height="512" fill="#FFD21F"/>
+    <rect width="512" height="512" fill="${BACKGROUND}"/>
     <g transform="translate(256 256) scale(${scale}) translate(-256 -256)">${MARK}</g>
   </svg>`;
 
