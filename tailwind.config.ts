@@ -8,6 +8,8 @@ const config: Config = {
         bg: "var(--color-bg)",
         surface: "var(--color-surface)",
         fretboard: "var(--color-fretboard)",
+        string: "var(--color-string)",
+        "fret-wire": "var(--color-fret-wire)",
         border: "var(--color-border)",
         hover: "var(--color-hover-bg)",
         ink: "var(--color-ink)",

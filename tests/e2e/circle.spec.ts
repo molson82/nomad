@@ -90,9 +90,7 @@ test("with the chain linked, the Circle's key reaches Chords", async ({ page }) 
   await swipe(page, "left");
   await expect(wheel(page)).toHaveAttribute("aria-valuetext", "G major, 1 sharp");
   await go(page, "Chords");
-  await expect(
-    page.getByRole("group", { name: "Root note" }).getByRole("button", { name: "G", exact: true }),
-  ).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByRole("heading", { level: 2, name: "G major" })).toBeVisible();
 });
 
 test("a preset fills the tray, transposes with the wheel and survives reload", async ({ page }) => {

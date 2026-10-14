@@ -25,6 +25,9 @@
   --color-text-secondary: oklch(43% 0.012 260);
   --color-text-tertiary: oklch(57% 0.012 260);
   --color-on-accent: var(--color-ink);
+  /* Fretboard line work; lightened for dark mode with the fretboard itself. */
+  --color-string: #6b5a40;
+  --color-fret-wire: #b89b6a;
 }
 
 [data-tool="circle"] { --accent-hue: 95; --accent-l: 86%; }  /* Decoder yellow */
@@ -48,6 +51,8 @@
     --color-text-primary: oklch(94% 0.006 85);
     --color-text-secondary: oklch(74% 0.012 260);
     --color-text-tertiary: oklch(60% 0.012 260);
+    --color-string: #e2cfa8;
+    --color-fret-wire: #a08862;
   }
 
   :root,

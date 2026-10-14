@@ -44,6 +44,11 @@ To test offline behavior by hand, use `pnpm build && pnpm preview`, never `pnpm 
   `useWheelRotation` (drag with flick, swipe ±1 step, ←/→; spring snap; commits through `setRoot` only once
   settled; reduced motion jumps). The progression is degrees in `nomad:circle:progression:v1`, so turning
   the wheel transposes it. Both stores use `lib/storage/persisted-store.ts`.
+- **Chord Compass (`components/chords/`, `lib/chords/`, `lib/theory/fretboard.ts`, `lib/theory/caged.ts`):**
+  major chords only, frets 0–15 (one past the device so every shape is complete). CAGED shapes are five
+  templates slid to the root (`cagedShapes`), sorted up the neck. The selected shape is stored by *name*
+  (`nomad:chords:shape:v1`) so it survives root changes. The overview is one SVG `viewBox` from
+  `neck-geometry.ts` that scales to every screen size.
 - **Offline (`public/sw.js` + `scripts/build-sw.mjs` + `lib/sw/register.ts`):** after `next build`,
   the script lists every file in `out/` (pages by directory URL) and a content hash into `out/sw.js`.
   The SW precaches everything on install and serves cache-first. A new version waits until the user
