@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { InfoButton } from "@/components/notes/info-button";
 import type { TheoryNote } from "@/lib/notes/types";
@@ -42,5 +42,30 @@ describe("InfoButton", () => {
     fireEvent(header, new MouseEvent("pointerdown", { bubbles: true, clientY: 100 }));
     fireEvent(header, new MouseEvent("pointerup", { bubbles: true, clientY: 180 }));
     expect(screen.queryByRole("dialog")).toBeNull();
+  });
+
+  it("keeps drags inside the sheet away from the tool behind it", () => {
+    const behind = vi.fn();
+    render(
+      <div onPointerDown={behind} onPointerUp={behind}>
+        <InfoButton label="About CAGED shapes" note={note} />
+      </div>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "About CAGED shapes" }));
+    const text = within(screen.getByRole("dialog")).getByText("Second.");
+    fireEvent(text, new MouseEvent("pointerdown", { bubbles: true, clientX: 0 }));
+    fireEvent(text, new MouseEvent("pointerup", { bubbles: true, clientX: 120 }));
+    expect(behind).not.toHaveBeenCalled();
+  });
+
+  it("lets the header own vertical drags and forgets a cancelled one", () => {
+    render(<InfoButton label="About CAGED shapes" note={note} />);
+    fireEvent.click(screen.getByRole("button", { name: "About CAGED shapes" }));
+    const header = within(screen.getByRole("dialog")).getByRole("heading", { name: "CAGED" });
+    expect(header.closest(".touch-none")).not.toBeNull();
+    fireEvent(header, new MouseEvent("pointerdown", { bubbles: true, clientY: 100 }));
+    fireEvent(header, new MouseEvent("pointercancel", { bubbles: true }));
+    fireEvent(header, new MouseEvent("pointerup", { bubbles: true, clientY: 180 }));
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
   });
 });

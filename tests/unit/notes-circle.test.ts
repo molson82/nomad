@@ -27,6 +27,10 @@ describe("fifthsNote", () => {
     ]);
   });
 
+  it("spells F♯'s signature with its E♯", () => {
+    expect(text(fifthsNote("F#"))[1]).toContain("F♯ major has 6 sharps: F♯ C♯ G♯ D♯ A♯ E♯.");
+  });
+
   it("names C's signature as none", () => {
     expect(text(fifthsNote("C"))[1]).toContain("C major has no sharps or flats.");
   });

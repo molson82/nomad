@@ -30,6 +30,9 @@ export function NoteSheet({ note, onClose }: { note: TheoryNote; onClose: () => 
       ref={dialog}
       aria-labelledby={titleId}
       onClose={onClose}
+      // Portal events still bubble through React to the tool's swipe handlers; stop them here.
+      onPointerDown={(event) => event.stopPropagation()}
+      onPointerUp={(event) => event.stopPropagation()}
       // A click whose target is the dialog itself landed on the backdrop.
       onClick={(event) => {
         if (event.target === event.currentTarget) close();
@@ -37,12 +40,16 @@ export function NoteSheet({ note, onClose }: { note: TheoryNote; onClose: () => 
       className="fixed inset-x-0 bottom-0 top-auto m-0 max-h-[80vh] w-full max-w-full flex-col rounded-t-[22px] bg-surface p-0 text-text-primary shadow-[0_-8px_24px_rgba(0,0,0,0.18)] backdrop:bg-[rgba(22,23,24,0.45)] open:flex motion-safe:animate-[sheet-up_200ms_ease-out] md:inset-0 md:m-auto md:h-fit md:max-w-[480px] md:rounded-[22px] md:motion-safe:animate-none"
     >
       <div
-        className="flex flex-col px-[18px] pt-2"
+        // touch-none: the header owns vertical drags, so the browser doesn't pan and cancel them.
+        className="flex touch-none flex-col px-[18px] pt-2"
         onPointerDown={(event) => {
           swipeFrom.current = event.clientY;
         }}
         onPointerUp={(event) => {
           if (swipeFrom.current !== null && event.clientY - swipeFrom.current > SWIPE_CLOSE_PX) close();
+          swipeFrom.current = null;
+        }}
+        onPointerCancel={() => {
           swipeFrom.current = null;
         }}
       >
