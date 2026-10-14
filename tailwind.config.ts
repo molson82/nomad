@@ -22,6 +22,13 @@ const config: Config = {
           tint: "var(--color-accent-tint)",
           on: "var(--color-on-accent)",
         },
+        decoder: {
+          DEFAULT: "var(--decoder-yellow)",
+          soft: "var(--decoder-yellow-soft)",
+          pale: "var(--decoder-yellow-pale)",
+          "ink-soft": "var(--decoder-ink-soft)",
+          muted: "var(--decoder-muted)",
+        },
       },
       borderRadius: {
         card: "20px",

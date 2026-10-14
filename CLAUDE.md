@@ -36,6 +36,14 @@ To test offline behavior by hand, use `pnpm build && pnpm preview`, never `pnpm 
   root and `useLinked(tool)` for the chain toggle. Linking adopts the current tool's key; unlinking
   copies the shared key into every tool. Storage failures fall back to in-memory state. Only the
   root note is shared; tool-specific choices stay in each tool.
+- **Theory (`lib/theory/`):** plain TypeScript, no React — `spelling.ts` (letter-walked spelled notes),
+  `circle.ts` (the 12 major keys in fifths order, signatures, mapping to/from the shared pitch-class root),
+  `chords.ts` (diatonic chords with Decoder degree triples, `DECODER_LAYOUT`, `COMMON_PROGRESSIONS`).
+  Chords and Scales should build on these rather than re-deriving theory.
+- **Circle of Fifths (`components/circle/`, `lib/circle/`):** the wheel is one angle θ driven by
+  `useWheelRotation` (drag with flick, swipe ±1 step, ←/→; spring snap; commits through `setRoot` only once
+  settled; reduced motion jumps). The progression is degrees in `nomad:circle:progression:v1`, so turning
+  the wheel transposes it. Both stores use `lib/storage/persisted-store.ts`.
 - **Offline (`public/sw.js` + `scripts/build-sw.mjs` + `lib/sw/register.ts`):** after `next build`,
   the script lists every file in `out/` (pages by directory URL) and a content hash into `out/sw.js`.
   The SW precaches everything on install and serves cache-first. A new version waits until the user

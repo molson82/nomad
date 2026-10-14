@@ -56,3 +56,13 @@
     --color-accent-tint: oklch(31% 0.06 var(--accent-hue));
   }
 }
+
+/* Circle of Fifths: the Decoder's own colors. The card is a physical object,
+   so these stay the same in dark mode. */
+:root {
+  --decoder-yellow: #ffd21f;
+  --decoder-yellow-soft: #ffe680;
+  --decoder-yellow-pale: #ffeda3;
+  --decoder-ink-soft: #3b3c3e;
+  --decoder-muted: #7a6a1a;
+}
