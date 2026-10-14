@@ -68,7 +68,7 @@ export function Neck({ markers, windowLow, windowHigh, ariaLabel, onPickFret }: 
         const style = MARKER_STYLE[m.kind];
         return (
           <g key={`${m.string}:${m.fret}`} data-tone data-kind={m.kind} data-in-shape={m.inWindow} opacity={m.inWindow ? 1 : 0.3}>
-            <circle cx={fretCenterX(m.fret)} cy={stringY(m.string)} r={9 * style.scale} fill={style.fill} stroke={style.stroke} strokeWidth={style.ring} />
+            <circle cx={fretCenterX(m.fret)} cy={stringY(m.string)} r={9 * style.scale} fill={style.fill} stroke={style.stroke} strokeWidth={style.ring} className={m.kind === "tonic" ? "stroke-text-primary" : undefined} />
             {m.label && m.kind !== "blue" && (
               <text x={fretCenterX(m.fret)} y={stringY(m.string) + 4} textAnchor="middle" fontSize={m.label.length > 1 ? 8 : 10} fontWeight={700} fill={style.text} className="hidden md:inline">
                 {m.label}
