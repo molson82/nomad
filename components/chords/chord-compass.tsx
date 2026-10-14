@@ -4,7 +4,7 @@ import { nearestShape } from "@/lib/chords/shape-store";
 import { useSelectedShape } from "@/lib/chords/use-selected-shape";
 import { useToolKey } from "@/lib/key-state/hooks";
 import { cagedShapes } from "@/lib/theory/caged";
-import { chordTones, majorTriad } from "@/lib/theory/fretboard";
+import { chordTones, triad } from "@/lib/theory/fretboard";
 import { stepNote } from "@/lib/theory/notes";
 import { formatNote } from "@/lib/theory/spelling";
 import { FocusCard } from "./focus-card";
@@ -18,7 +18,7 @@ export function ChordCompass() {
   const shapes = cagedShapes(root);
   const index = shapes.findIndex((s) => s.name === shapeName);
   const shape = shapes[index];
-  const chordName = `${formatNote(majorTriad(root)[0])} major`;
+  const chordName = `${formatNote(triad(root)[0])} major`;
   const chips = <ShapeChips shapes={shapes} selected={shapeName} onSelect={setShapeName} />;
 
   const stepShape = (direction: 1 | -1) => {
