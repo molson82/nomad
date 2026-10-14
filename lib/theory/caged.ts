@@ -1,6 +1,6 @@
 import type { Note } from "@/lib/theory/notes";
 import { TUNING, toneAt, triad, type ChordTone, type Quality } from "./fretboard";
-import { mod, pitchClassOf } from "./spelling";
+import { mod, pitchClassOf, type SpelledNote } from "./spelling";
 
 export type ShapeName = "C" | "A" | "G" | "E" | "D";
 export const SHAPE_NAMES: readonly ShapeName[] = ["C", "A", "G", "E", "D"];
@@ -35,7 +35,11 @@ const TEMPLATES: Record<Quality, Record<ShapeName, Template>> = {
 };
 
 export function cagedShapes(root: Note, quality: Quality = "major"): CagedShape[] {
-  const chord = triad(root, quality);
+  return cagedShapesFor(triad(root, quality), quality);
+}
+
+// From an already-spelled triad, so a progression's chords keep the Circle's spelling.
+export function cagedShapesFor(chord: readonly [SpelledNote, SpelledNote, SpelledNote], quality: Quality): CagedShape[] {
   const rootPitch = pitchClassOf(chord[0]);
   return SHAPE_NAMES.map((name) => {
     const { rootString, offsets } = TEMPLATES[quality][name];

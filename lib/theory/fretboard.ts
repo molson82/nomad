@@ -29,7 +29,10 @@ export function toneAt(chord: readonly SpelledNote[], string: number, fret: numb
 }
 
 export function chordTones(root: Note, quality: Quality = "major"): ChordTone[] {
-  const chord = triad(root, quality);
+  return chordTonesFor(triad(root, quality), quality);
+}
+
+export function chordTonesFor(chord: readonly SpelledNote[], quality: Quality): ChordTone[] {
   const pitches = chord.map(pitchClassOf);
   const tones: ChordTone[] = [];
   TUNING.forEach((open, string) => {
