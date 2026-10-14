@@ -10,7 +10,7 @@ const SCALES: Record<string, string> = {
   A: "A B C♯ D E F♯ G♯",
   E: "E F♯ G♯ A B C♯ D♯",
   B: "B C♯ D♯ E F♯ G♯ A♯",
-  "F♯": "F♯ G♯ A♯ B C♯ D♯ E♯",
+  "F♯": "F♯ G♯ A♯ B C♯ D♯ F",
   "D♭": "D♭ E♭ F G♭ A♭ B♭ C",
   "A♭": "A♭ B♭ C D♭ E♭ F G",
   "E♭": "E♭ F G A♭ B♭ C D",
@@ -55,7 +55,9 @@ describe("majorScale", () => {
 
 describe("keySignature", () => {
   const sig = (tonic: string) =>
-    keySignature(CIRCLE.find((k) => formatNote(k.tonic) === tonic)!).map(formatNote).join(" ");
+    keySignature(CIRCLE.find((k) => formatNote(k.tonic) === tonic)!)
+      .map((n) => n.letter + (n.accidental > 0 ? "♯" : "♭"))
+      .join(" ");
 
   it("lists sharps in F C G D A E B order", () => {
     expect(sig("C")).toBe("");

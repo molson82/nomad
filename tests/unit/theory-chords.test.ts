@@ -19,6 +19,7 @@ describe("diatonicChords", () => {
     expect(names("G")).toBe("G Am Bm C D Em F♯°");
     expect(names("F")).toBe("F Gm Am B♭ C Dm E°");
     expect(names("D♭")).toBe("D♭ E♭m Fm G♭ A♭ B♭m C°");
+    expect(names("F♯")).toBe("F♯ G♯m A♯m B C♯ D♯m F°"); // vii° shown as F°, not E♯°
   });
 
   it("builds each triad from degrees d, d+2, d+4 wrapped into 1–7", () => {

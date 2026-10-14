@@ -22,7 +22,13 @@ export function spellAs(letter: Letter, pitchClass: number): SpelledNote {
   return { letter, accidental };
 }
 
+// Display only: these four sit on a natural, so show the name players use (F♯ major's 7th reads F, not E♯).
+// The spelled note itself keeps its letter, so scales still use each letter once.
+const PLAIN: Record<string, string> = { "E1": "F", "B1": "C", "F-1": "E", "C-1": "B" };
+
 export function formatNote(note: SpelledNote): string {
+  const plain = PLAIN[`${note.letter}${note.accidental}`];
+  if (plain) return plain;
   const glyphs = note.accidental > 0 ? "♯".repeat(note.accidental) : "♭".repeat(-note.accidental);
   return note.letter + glyphs;
 }
