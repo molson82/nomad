@@ -26,7 +26,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }, [tool]);
 
   return (
-    <div data-tool={tool ?? "circle"} className="min-h-dvh bg-bg">
+    <div
+      data-tool={tool ?? "circle"}
+      className="min-h-dvh bg-bg pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]"
+    >
       <div className="mx-auto flex min-h-dvh max-w-[1440px]">
         <Sidebar tool={tool} linked={linked} onLinkedChange={setLinked} />
         <MobileHeader title={title} linked={linked} onLinkedChange={setLinked} />

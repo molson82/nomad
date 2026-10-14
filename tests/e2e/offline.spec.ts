@@ -26,3 +26,12 @@ test("the manifest is served and installable-shaped", async ({ request }) => {
   expect(manifest.display).toBe("standalone");
   expect(manifest.icons.map((icon: { purpose: string }) => icon.purpose)).toContain("maskable");
 });
+
+// black-translucent forces white status-bar text, invisible over the light cream header.
+test("the iOS status bar keeps dark-on-light text", async ({ page }) => {
+  await page.goto("/circle/");
+  await expect(page.locator('meta[name="apple-mobile-web-app-status-bar-style"]')).toHaveAttribute(
+    "content",
+    "default",
+  );
+});
