@@ -48,7 +48,7 @@ export function CircleOfFifths() {
             />
             <ToolJumps root={root} degrees={progression.degrees} />
           </div>
-          <CommonProgressions activeId={progression.presetId} onPick={actions.pick} />
+          <CommonProgressions root={root} activeId={progression.presetId} onPick={actions.pick} />
         </div>
       </div>
     </div>

@@ -2,7 +2,9 @@
 
 import { useRef } from "react";
 import { classifyGesture } from "@/lib/circle/wheel-math";
-import { CIRCLE, describeKey, keySignature } from "@/lib/theory/circle";
+import { InfoButton } from "@/components/notes/info-button";
+import { fifthsNote, keyChordsNote } from "@/lib/notes/circle-notes";
+import { CIRCLE, describeKey, keySignature, rootNoteFor } from "@/lib/theory/circle";
 import { DECODER_LAYOUT, diatonicChords } from "@/lib/theory/chords";
 import { formatNote } from "@/lib/theory/spelling";
 import { ChordButton, DimChordButton } from "./chord-circle";
@@ -65,8 +67,9 @@ export function DecoderCard({ keyIndex, theta, wheelHandlers, badges, onAddChord
         <dl className="flex min-w-0 flex-col gap-2.5 md:gap-4 xl:gap-3.5">
           <div className="flex flex-col gap-px">
             <dt className={FACT_LABEL}>Key</dt>
-            <dd className="font-display text-[26px] font-semibold leading-tight md:text-[38px] xl:text-[34px]">
+            <dd className="flex items-center font-display text-[26px] font-semibold leading-tight md:text-[38px] xl:text-[34px]">
               {formatNote(key.tonic)} major
+              <InfoButton label="About why the circle moves in fifths" note={fifthsNote(rootNoteFor(key))} className="text-ink" />
             </dd>
           </div>
           <div className="flex flex-col items-start gap-1">
@@ -103,9 +106,12 @@ export function DecoderCard({ keyIndex, theta, wheelHandlers, badges, onAddChord
         <div className="absolute left-1.5 top-0 md:left-3">
           <DimChordButton chord={chords[DECODER_LAYOUT.dim - 1]} steps={steps(DECODER_LAYOUT.dim)} onAdd={onAddChord} />
         </div>
-        <div aria-hidden className="absolute right-1.5 top-0 flex h-full flex-col items-end justify-between md:right-3">
-          <span className={`${ROW_LABEL} uppercase`}>Major ↑</span>
-          <span className={ROW_LABEL}>minor ↓</span>
+        <div className="absolute right-1.5 top-0 flex h-full flex-col items-end justify-between md:right-3">
+          <span className="flex items-center">
+            <span aria-hidden className={`${ROW_LABEL} uppercase`}>Major ↑</span>
+            <InfoButton label="About the key's chords" note={keyChordsNote(rootNoteFor(key))} className="text-ink" />
+          </span>
+          <span aria-hidden className={ROW_LABEL}>minor ↓</span>
         </div>
       </div>
 
