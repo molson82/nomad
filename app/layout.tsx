@@ -1,13 +1,20 @@
 import type { Metadata, Viewport } from "next";
-import { DM_Sans, Oswald } from "next/font/google";
+import localFont from "next/font/local";
 import { AppShell } from "@/components/layout/app-shell";
 import "./globals.css";
 
-// next/font self-hosts both families in out/, so type renders offline too.
-const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
-const oswald = Oswald({
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
+// Latin-subset variable fonts committed in app/fonts (OFL, licenses alongside).
+// Local files, not next/font/google: the build never depends on reaching
+// Google Fonts (it failed in CI), and out/ ships them so type renders offline.
+const dmSans = localFont({
+  src: "./fonts/dm-sans-latin-wght.woff2",
+  weight: "100 1000",
+  variable: "--font-sans",
+  display: "swap",
+});
+const oswald = localFont({
+  src: "./fonts/oswald-latin-wght.woff2",
+  weight: "200 700",
   variable: "--font-display",
   display: "swap",
 });
