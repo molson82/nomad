@@ -64,3 +64,20 @@ test("the selected shape survives a reload", async ({ page }) => {
   await page.reload();
   await expect(focus(page, "A-shape, frets 3 to 5")).toBeVisible();
 });
+
+test("Minor shows the relative minor in the same region, and survives a reload", async ({ page }) => {
+  await focus(page, "E-shape, frets 8 to 10").waitFor(); // C major, E-shape
+  await page.getByRole("group", { name: "Major or minor" }).getByRole("button", { name: "Minor" }).click();
+  await expect(page.getByRole("heading", { level: 2, name: "A minor" })).toBeVisible();
+  await expect(page.getByText("Relative of C major (⑥)")).toBeVisible();
+  await expect(focus(page, "Dm-shape, frets 7 to 10")).toBeVisible();
+  await expect(chip(page, "Am-shape, frets 0 to 2")).toBeVisible();
+
+  await page.reload();
+  await expect(page.getByRole("heading", { level: 2, name: "A minor" })).toBeVisible();
+  await expect(focus(page, "Dm-shape, frets 7 to 10")).toBeVisible();
+
+  await page.getByRole("group", { name: "Major or minor" }).getByRole("button", { name: "Major" }).click();
+  await expect(heading(page, "C")).toBeVisible();
+  await expect(focus(page, "E-shape, frets 8 to 10")).toBeVisible();
+});
