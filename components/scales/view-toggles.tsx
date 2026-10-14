@@ -1,6 +1,6 @@
 import type { ScaleType, ScaleView, Tonality } from "@/lib/theory/scales";
 
-const SEGMENT = "min-h-10 px-3.5 font-display text-[15px] font-semibold";
+const SEGMENT = "min-h-11 px-3.5 font-display text-[15px] font-semibold";
 const TONALITIES: [Tonality, string][] = [["major", "Major"], ["minor", "Minor"]];
 const TYPES: [ScaleType, string][] = [["scale", "Scale"], ["pentatonic", "Pentatonic"], ["blues", "Blues"]];
 

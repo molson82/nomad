@@ -12,6 +12,11 @@ describe("ViewToggles", () => {
     expect(type.getAllByRole("button").map((b) => b.getAttribute("aria-pressed"))).toEqual(["false", "false", "true"]);
   });
 
+  it("keeps every toggle at least 44px tall", () => {
+    render(<ViewToggles view={{ tonality: "major", type: "scale" }} onChange={() => {}} />);
+    for (const button of screen.getAllByRole("button")) expect(button).toHaveClass("min-h-11");
+  });
+
   it("reports changes as patches", () => {
     const onChange = vi.fn();
     render(<ViewToggles view={{ tonality: "major", type: "scale" }} onChange={onChange} />);

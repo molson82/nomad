@@ -125,7 +125,8 @@ For G major these give G 0–4, E 2–5, D 4–8, C 7–10, A 9–13. Minor Scal
 notes) with minor numbering.
 
 **Pentatonic boxes** — frets above `r`, the minor root on the 6th string (`r = mod(minorRootPitch − 4, 12)`);
-a box with any fret above 15 moves down 12:
+each box takes the lowest octave that fits on the neck (down 12 whenever every fret stays ≥ 0), the same rule
+as the full-scale positions, so box N always shares letter N's region:
 
 | Box | Letter | 6th | 5th | 4th | 3rd | 2nd | 1st |
 |---|---|---|---|---|---|---|---|
@@ -135,7 +136,7 @@ a box with any fret above 15 moves down 12:
 | 4 | C | 7 10 | 7 10 | 7 9 | 7 9 | 8 10 | 7 10 |
 | 5 | A | 10 12 | 10 12 | 9 12 | 9 12 | 10 12 | 10 12 |
 
-For E minor (G major) these give 0–3, 2–5, 4–8, 7–10, 9–12. Major Pentatonic uses the same boxes with major
+For E minor (G major) these give 0–3, 2–5, 4–8, 7–10, 9–12; for A minor (C major), Box 4 0–3 sits with the C-shape 0–3. Major Pentatonic uses the same boxes with major
 numbering. **Blues** adds, to each box, the blue note on every string where its fret lies within that box's
 `[lowFret, highFret]` (E box 1: 5th string fret 1, 3rd string fret 3).
 

@@ -104,8 +104,18 @@ describe("pentatonic boxes", () => {
     expect(box(5)).toEqual([[10, 12], [10, 12], [9, 12], [9, 12], [10, 12], [10, 12]]);
   });
 
-  it("wraps a box down 12 rather than past fret 15", () => {
-    expect(order(positions("C", MIN_PENT), true)).toBe("5 2–5 · 1 5–8 · 2 7–10 · 3 9–13 · 4 12–15");
+  it("puts each box in its lowest octave, like the full-scale positions", () => {
+    expect(order(positions("C", MIN_PENT), true)).toBe("4 0–3 · 5 2–5 · 1 5–8 · 2 7–10 · 3 9–13");
+  });
+
+  it("keeps box N in the same neck region as letter N in every key", () => {
+    for (const root of NOTES) {
+      const full = positions(root, MAJOR);
+      for (const box of positions(root, MAJ_PENT)) {
+        const sameLetter = full.find((p) => p.letter === box.letter)!;
+        expect(Math.abs(box.lowFret - sameLetter.lowFret), `${root} box ${box.box}`).toBeLessThanOrEqual(2);
+      }
+    }
   });
 
   it("every key's boxes hold all 5 notes, 2 per string, within 0–15", () => {

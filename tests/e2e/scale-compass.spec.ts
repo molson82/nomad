@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
 // Fresh storage: root C. C major positions C 0–3 · A 2–6 · G 5–9 · E 7–10 · D 9–13;
-// A-minor boxes 5 2–5 · 1 5–8 · 2 7–10 · 3 9–13 · 4 12–15.
+// A-minor boxes 4 0–3 · 5 2–5 · 1 5–8 · 2 7–10 · 3 9–13.
 const focus = (page: Page, name: string) => page.getByRole("region", { name });
 const heading = (page: Page, name: string) => page.getByRole("heading", { level: 2, name });
 const press = (page: Page, name: string) => page.getByRole("button", { name, exact: true }).click();

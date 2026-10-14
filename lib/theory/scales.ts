@@ -126,7 +126,8 @@ export function positions(root: Note, view: ScaleView): Position[] {
     const bluePitch = view.type === "blues" ? pitchClassOf(tones.find((t) => t.kind === "blue")!.note) : null;
     list = BOXES.map((rows, i) => {
       let base = minorRootFret;
-      if (rows.flat().some((offset) => base + offset > MAX_FRET)) base -= 12; // down an octave, not off the neck
+      // Lowest octave that fits, like the full-scale positions, so box N shares letter N's region.
+      if (rows.flat().every((offset) => base - 12 + offset >= 0)) base -= 12;
       const cells = rows.flatMap((row, string) => row.map((o) => [string, base + o] as [number, number]));
       const position = makePosition(tones, POSITION_LETTERS[i], (i + 1) as Position["box"], cells);
       if (bluePitch !== null) {
