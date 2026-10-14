@@ -7,3 +7,8 @@ export type Note = (typeof NOTES)[number];
 export function isNote(value: unknown): value is Note {
   return typeof value === "string" && (NOTES as readonly string[]).includes(value);
 }
+
+// One semitone up or down through NOTES, wrapping B ↔ C.
+export function stepNote(note: Note, direction: 1 | -1): Note {
+  return NOTES[(NOTES.indexOf(note) + direction + 12) % 12];
+}
