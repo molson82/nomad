@@ -41,4 +41,11 @@ describe("ProgressionStrip", () => {
     fireEvent.click(strip().getByRole("button", { name: "Previous chord" }));
     expect(onSelect).toHaveBeenLastCalledWith(2);
   });
+
+  it("gives the arrows a 44px tap target", () => {
+    render(<ProgressionStrip steps={steps} selected={1} onSelect={() => {}} />);
+    for (const name of ["Previous chord", "Next chord"]) {
+      expect(strip().getByRole("button", { name }).className).toMatch(/\bw-11\b/);
+    }
+  });
 });

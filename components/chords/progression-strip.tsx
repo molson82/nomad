@@ -1,6 +1,6 @@
 import { nextPlayable, type ProgressionStep } from "@/lib/chords/progression-chords";
 
-const ARROW = "grid h-14 w-9 shrink-0 place-items-center text-2xl text-accent-ink disabled:opacity-30";
+const ARROW = "grid h-14 w-11 shrink-0 place-items-center text-2xl text-accent-ink disabled:opacity-30";
 
 interface ProgressionStripProps {
   steps: ProgressionStep[];
