@@ -75,7 +75,7 @@ export function FretDiagram({ markers, lowFret, highFret, ariaLabel, showMuted, 
           const style = MARKER_STYLE[m.kind];
           return (
             <g key={key} data-role={role} data-open={m.fret === 0}>
-              <circle cx={x(m.string)} cy={y(m.fret)} r={18 * style.scale} fill={style.fill} stroke={style.stroke} strokeWidth={style.ring + 0.5} />
+              <circle cx={x(m.string)} cy={y(m.fret)} r={18 * style.scale} fill={style.fill} stroke={style.stroke} strokeWidth={style.ring + 0.5} className={m.kind === "tonic" ? "stroke-text-primary" : undefined} />
               {m.label && m.kind !== "tonic" && (
                 <text x={x(m.string)} y={y(m.fret) + (m.label.length > 1 ? 5 : 6)} textAnchor="middle" fontSize={m.label.length > 1 ? 13 : 17} fontWeight={700} fill={style.text}>
                   {m.label}

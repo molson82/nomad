@@ -10,6 +10,14 @@ const markers: DiagramMarker[] = [
 ];
 
 describe("FretDiagram", () => {
+  it("outlines root notes in the text color so they read on the wood in dark mode", () => {
+    const { container } = render(
+      <FretDiagram markers={markers} lowFret={0} highFret={3} ariaLabel="box" showMuted={false} openStyle="marker" showNoteNames={false} />,
+    );
+    const classes = [...container.querySelectorAll("g circle")].map((c) => c.getAttribute("class"));
+    expect(classes.filter((c) => c === "stroke-text-primary")).toHaveLength(1);
+  });
+
   it("draws open-string notes as markers and no × when muting is off", () => {
     const { container } = render(
       <FretDiagram markers={markers} lowFret={0} highFret={3} ariaLabel="box" showMuted={false} openStyle="marker" showNoteNames={false} />,

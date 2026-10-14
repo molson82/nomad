@@ -15,8 +15,14 @@ describe("Neck", () => {
     const circle = (kind: string) => container.querySelector(`[data-kind="${kind}"] circle`)!;
     expect(circle("relative").getAttribute("stroke")).toBe("#2F5BC0");
     expect(Number(circle("blue").getAttribute("r"))).toBeLessThan(Number(circle("tonic").getAttribute("r")));
-    expect(circle("blue").getAttribute("fill")).toBe("#5B8DEF");
+    expect(circle("blue").getAttribute("fill")).toBe("#2F6FE0");
     expect(container.querySelector('[data-kind="relative"]')!.getAttribute("data-in-shape")).toBe("false");
+  });
+
+  it("outlines root notes in the text color so they read on the wood in dark mode", () => {
+    const { container } = render(<Neck markers={markers} windowLow={0} windowHigh={3} ariaLabel="neck" onPickFret={() => {}} />);
+    expect(container.querySelector('[data-kind="tonic"] circle')!.getAttribute("class")).toBe("stroke-text-primary");
+    expect(container.querySelector('[data-kind="blue"] circle')!.getAttribute("class")).toBeNull();
   });
 });
 
