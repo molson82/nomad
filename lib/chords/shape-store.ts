@@ -21,4 +21,9 @@ export function nearestShape(shapes: CagedShape[], fret: number): ShapeName {
   return nearestByCentre(shapes, fret).name;
 }
 
+// Moving to another chord keeps the hand in the same region of the neck.
+export function shapeNear(shapes: CagedShape[], from: CagedShape): ShapeName {
+  return nearestShape(shapes, (from.lowFret + from.highFret) / 2);
+}
+
 export const shapeStore = createPersistedStore(SHAPE_KEY, parseShape, DEFAULT_SHAPE);
