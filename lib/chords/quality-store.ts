@@ -24,3 +24,19 @@ export function shapeForQuality(root: Note, from: CagedShape, to: Quality): Shap
 }
 
 export const qualityStore = createPersistedStore(QUALITY_KEY, parseQuality, DEFAULT_QUALITY);
+
+// Remembers the last switch so switching straight back returns to the starting shape.
+export type SwitchMemo = { root: Note; from: Quality; fromName: ShapeName; toName: ShapeName } | null;
+
+export function switchQualityShape(
+  root: Note,
+  quality: Quality,
+  name: ShapeName,
+  to: Quality,
+  memo: SwitchMemo,
+): { name: ShapeName; memo: SwitchMemo } {
+  const back = memo && memo.root === root && memo.from === to && memo.toName === name;
+  const current = cagedShapes(root, quality).find((s) => s.name === name)!;
+  const target = back ? memo.fromName : shapeForQuality(root, current, to);
+  return { name: target, memo: { root, from: quality, fromName: name, toName: target } };
+}

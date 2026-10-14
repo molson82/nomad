@@ -1,7 +1,8 @@
 "use client";
 
+import { useRef } from "react";
 import { MajorMinorToggle } from "@/components/fretboard/major-minor-toggle";
-import { shapeForQuality } from "@/lib/chords/quality-store";
+import { switchQualityShape, type SwitchMemo } from "@/lib/chords/quality-store";
 import { nearestShape } from "@/lib/chords/shape-store";
 import { useChordQuality } from "@/lib/chords/use-chord-quality";
 import { useSelectedShape } from "@/lib/chords/use-selected-shape";
@@ -18,6 +19,7 @@ import { ShapeChips } from "./shape-chips";
 export function ChordCompass() {
   const [root, setRoot] = useToolKey("chords");
   const [quality, setQuality] = useChordQuality();
+  const lastSwitch = useRef<SwitchMemo>(null);
   const [shapeName, setShapeName] = useSelectedShape();
   const shapes = cagedShapes(root, quality);
   const index = shapes.findIndex((s) => s.name === shapeName);
@@ -32,7 +34,9 @@ export function ChordCompass() {
 
   const switchQuality = (next: Quality) => {
     if (next === quality) return;
-    setShapeName(shapeForQuality(root, shape, next));
+    const result = switchQualityShape(root, quality, shape.name, next, lastSwitch.current);
+    lastSwitch.current = result.memo;
+    setShapeName(result.name);
     setQuality(next);
   };
 
