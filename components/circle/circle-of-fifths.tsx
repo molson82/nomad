@@ -9,6 +9,7 @@ import { diatonicChords } from "@/lib/theory/chords";
 import { CommonProgressions } from "./common-progressions";
 import { DecoderCard } from "./decoder-card";
 import { ProgressionTray } from "./progression-tray";
+import { ToolJumps } from "./tool-jumps";
 
 export function CircleOfFifths() {
   const [root, setRoot] = useToolKey("circle");
@@ -38,12 +39,15 @@ export function CircleOfFifths() {
           onSwipe={step}
         />
         <div className="flex flex-col gap-5 md:grid md:grid-cols-2 md:items-start xl:flex xl:min-w-0 xl:flex-1 xl:flex-col">
-          <ProgressionTray
-            keyChords={diatonicChords(CIRCLE[displayIndex])}
-            degrees={progression.degrees}
-            onRemove={actions.remove}
-            onClear={actions.clear}
-          />
+          <div className="flex flex-col gap-3">
+            <ProgressionTray
+              keyChords={diatonicChords(CIRCLE[displayIndex])}
+              degrees={progression.degrees}
+              onRemove={actions.remove}
+              onClear={actions.clear}
+            />
+            <ToolJumps root={root} degrees={progression.degrees} />
+          </div>
           <CommonProgressions activeId={progression.presetId} onPick={actions.pick} />
         </div>
       </div>
