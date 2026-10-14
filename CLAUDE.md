@@ -77,6 +77,10 @@ the Vercel dashboard.
   selection is stored as the letter (`nomad:scales:view:v1`) so scale ↔ pentatonic stays in the same region.
 - **Shared fretboard (`components/fretboard/`):** the SVG neck, diagram, position chips, focus card and root
   stepper used by both compasses; the Chord Compass's components are thin adapters over them.
+- **Theory notes (`lib/notes/`, `components/notes/`):** eight short "why" notes, each a pure function of the
+  tool's live state returning `{ title, paragraphs }` (live values as `{ strong }`). `InfoButton` (ⓘ, 44px)
+  portals a `NoteSheet` — a native `<dialog>` via `showModal()` — to `<body>` only while open and refocuses
+  itself on close. jsdom lacks `showModal`, so `tests/unit/setup.ts` stubs it.
 - **Offline (`public/sw.js` + `scripts/build-sw.mjs` + `lib/sw/register.ts`):** after `next build`,
   the script lists every file in `out/` (pages by directory URL) and a content hash into `out/sw.js`.
   The SW precaches everything on install and serves cache-first. A new version waits until the user

@@ -23,3 +23,22 @@ test("Circle: fifths and progression notes", async ({ page }) => {
   await page.getByRole("button", { name: "About progressions" }).click();
   await expect(page.getByRole("dialog", { name: "Pop · I–V–vi–IV" })).toContainText("C – G – Am – F");
 });
+
+test("Chord Compass: CAGED note lists the key chord's shapes", async ({ page }) => {
+  await page.goto("/chords/");
+  await page.getByRole("button", { name: "About CAGED shapes" }).click();
+  const sheet = page.getByRole("dialog", { name: "CAGED: five shapes, one chord" });
+  await expect(sheet).toContainText("in C the C-shape (frets 0–3) hands its root to the A-shape (3–5)");
+  await sheet.getByRole("button", { name: "Close" }).click();
+  await expect(sheet).toBeHidden();
+});
+
+test("Scale Compass: building and pentatonic notes follow the view", async ({ page }) => {
+  await page.goto("/scales/");
+  await page.getByRole("group", { name: "Major or minor" }).getByRole("button", { name: "Minor" }).click();
+  await page.getByRole("button", { name: "About how the scale is built" }).click();
+  await expect(page.getByRole("dialog", { name: "Building A minor" })).toContainText("♭3 ♭6 ♭7");
+  await page.keyboard.press("Escape");
+  await page.getByRole("button", { name: "About pentatonic and blues" }).click();
+  await expect(page.getByRole("dialog", { name: "Pentatonic and blues" })).toContainText("A C D E G");
+});

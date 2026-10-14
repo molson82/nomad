@@ -43,4 +43,24 @@ describe("RootPicker", () => {
     expect(screen.getByText("D · F♯ · A")).toBeInTheDocument();
     expect(screen.getByText("V in G major")).toBeInTheDocument();
   });
+
+  it("explains the chord on screen, including a progression chord", () => {
+    const { rerender } = render(<RootPicker root="G" quality="minor" onStep={() => {}} />);
+    fireEvent.click(screen.getByRole("button", { name: "About how a chord is built" }));
+    expect(screen.getByRole("dialog", { name: "How E minor is built" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Close" }));
+
+    rerender(<RootPicker root="G" quality="major" step={progressionSteps("G", [5])[0]} onStep={() => {}} />);
+    fireEvent.click(screen.getByRole("button", { name: "About how a chord is built" }));
+    expect(screen.getByRole("dialog", { name: "How D major is built" })).toBeInTheDocument();
+  });
+
+  it("explains the relative minor from the key view only", () => {
+    const { rerender } = render(<RootPicker root="G" quality="major" onStep={() => {}} />);
+    fireEvent.click(screen.getByRole("button", { name: "About the relative minor" }));
+    expect(screen.getByRole("dialog", { name: "G major and E minor" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Close" }));
+    rerender(<RootPicker root="G" quality="major" step={progressionSteps("G", [5])[0]} onStep={() => {}} />);
+    expect(screen.queryByRole("button", { name: "About the relative minor" })).toBeNull();
+  });
 });

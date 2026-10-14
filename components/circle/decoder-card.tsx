@@ -67,7 +67,7 @@ export function DecoderCard({ keyIndex, theta, wheelHandlers, badges, onAddChord
         <dl className="flex min-w-0 flex-col gap-2.5 md:gap-4 xl:gap-3.5">
           <div className="flex flex-col gap-px">
             <dt className={FACT_LABEL}>Key</dt>
-            <dd className="flex items-center font-display text-[26px] font-semibold leading-tight md:text-[38px] xl:text-[34px]">
+            <dd className="flex flex-wrap items-center font-display text-[26px] font-semibold leading-tight md:text-[38px] xl:text-[34px]">
               {formatNote(key.tonic)} major
               <InfoButton label="About why the circle moves in fifths" note={fifthsNote(rootNoteFor(key))} className="text-ink" />
             </dd>

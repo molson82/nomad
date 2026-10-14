@@ -8,6 +8,7 @@ const ARROW = "grid h-11 w-11 shrink-0 place-items-center text-[28px] text-accen
 interface FocusCardProps {
   regionLabel: string;
   title: string;
+  titleAction?: ReactNode; // e.g. an ⓘ beside the title
   subtitle: string;
   previousLabel: string;
   nextLabel: string;
@@ -21,7 +22,7 @@ interface FocusCardProps {
 }
 
 export function FocusCard(props: FocusCardProps) {
-  const { regionLabel, title, subtitle, previousLabel, nextLabel, canPrevious, canNext, count, index, onStep, children, footer } = props;
+  const { regionLabel, title, titleAction, subtitle, previousLabel, nextLabel, canPrevious, canNext, count, index, onStep, children, footer } = props;
   const start = useRef<{ x: number; y: number } | null>(null);
 
   return (
@@ -48,7 +49,10 @@ export function FocusCard(props: FocusCardProps) {
           ‹
         </button>
         <div className="flex flex-col items-center text-center xl:order-2 xl:flex-1 xl:items-start xl:text-left">
-          <h3 className="text-balance font-display text-[26px] font-semibold leading-tight xl:text-[30px]">{title}</h3>
+          <div className="flex items-center justify-center xl:justify-start">
+            <h3 className="text-balance font-display text-[26px] font-semibold leading-tight xl:text-[30px]">{title}</h3>
+            {titleAction}
+          </div>
           <p className="text-[13px] text-text-secondary xl:text-sm">{subtitle}</p>
         </div>
         <button type="button" disabled={!canNext} aria-label={nextLabel} onClick={() => onStep(1)} className={`${ARROW} xl:order-last`}>
