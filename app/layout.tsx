@@ -16,6 +16,8 @@ export const metadata: Metadata = {
   title: { default: "Nomad", template: "%s · Nomad" },
   description: "Guitar theory decoders, on the go.",
   applicationName: "Nomad",
+  appleWebApp: { capable: true, title: "Nomad", statusBarStyle: "black-translucent" },
+  icons: { apple: "/icons/apple-touch-icon.png" },
 };
 
 export const viewport: Viewport = {

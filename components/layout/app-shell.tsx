@@ -8,6 +8,7 @@ import { MobileHeader } from "./mobile-header";
 import { NAV_ITEMS } from "./nav-items";
 import { Sidebar } from "./sidebar";
 import { TabBar } from "./tab-bar";
+import { UpdatePill } from "./update-pill";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const tool = toolFromPath(usePathname());
@@ -34,6 +35,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </main>
       </div>
       <TabBar tool={tool} linked={linked} />
+      <UpdatePill />
     </div>
   );
 }
