@@ -34,14 +34,14 @@ export function ChordDiagram({ shape, chordName }: ChordDiagramProps) {
         )}
         <rect x={LEFT - 20} y={TOP} width={5 * STRING_GAP + 40} height={rows * FRET_H} className="fill-fretboard" />
         {Array.from({ length: rows + 1 }, (_, i) => (
-          <line key={i} x1={LEFT - 20} x2={x(5) + 20} y1={TOP + i * FRET_H} y2={TOP + i * FRET_H} stroke="#B89B6A" strokeWidth={2} />
+          <line key={i} x1={LEFT - 20} x2={x(5) + 20} y1={TOP + i * FRET_H} y2={TOP + i * FRET_H} className="stroke-fret-wire" strokeWidth={2} />
         ))}
-        {open && <line data-nut x1={LEFT - 20} x2={x(5) + 20} y1={TOP} y2={TOP} stroke="#161718" strokeWidth={6} />}
+        {open && <line data-nut x1={LEFT - 20} x2={x(5) + 20} y1={TOP} y2={TOP} className="stroke-text-primary" strokeWidth={6} />}
         {[0, 1, 2, 3, 4, 5].map((string) => {
           const tone = used.get(string);
           return (
             <g key={string}>
-              <line x1={x(string)} x2={x(string)} y1={TOP} y2={TOP + rows * FRET_H} stroke="#6B5A40" strokeWidth={1 + (5 - string) * 0.4} />
+              <line data-string-line x1={x(string)} x2={x(string)} y1={TOP} y2={TOP + rows * FRET_H} className="stroke-string" strokeWidth={1 + (5 - string) * 0.4} />
               {tone ? (
                 <text data-string-note x={x(string)} y={height - 12} textAnchor="middle" fontSize={16} className="fill-text-primary font-display font-semibold">
                   {formatNote(tone.note)}
@@ -55,20 +55,26 @@ export function ChordDiagram({ shape, chordName }: ChordDiagramProps) {
           );
         })}
         {shape.tones.map((tone) => {
-          const isOpen = tone.fret === 0;
-          const r = isOpen ? 12 : 18;
+          // Open strings are the standard hollow ○ above the nut; their role is in the sr-only list.
+          if (tone.fret === 0) {
+            return (
+              <g key={tone.string} data-role={tone.role} data-open>
+                <circle cx={x(tone.string)} cy={y(0)} r={10} fill="none" className="stroke-text-primary" strokeWidth={2.5} />
+              </g>
+            );
+          }
           return (
-            <g key={tone.string} data-role={tone.role} data-open={isOpen}>
+            <g key={tone.string} data-role={tone.role} data-open={false}>
               <circle
                 cx={x(tone.string)}
                 cy={y(tone.fret)}
-                r={r}
+                r={18}
                 fill={tone.role === "R" ? "#161718" : "#FFFFFF"}
                 stroke="#161718"
                 strokeWidth={2}
               />
               {tone.role !== "R" && (
-                <text x={x(tone.string)} y={y(tone.fret) + (isOpen ? 4 : 6)} textAnchor="middle" fontSize={isOpen ? 12 : 17} fontWeight={700} fill="#161718">
+                <text x={x(tone.string)} y={y(tone.fret) + 6} textAnchor="middle" fontSize={17} fontWeight={700} fill="#161718">
                   {tone.role}
                 </text>
               )}

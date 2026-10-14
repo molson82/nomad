@@ -30,6 +30,24 @@ describe("ChordDiagram", () => {
     expect(container.querySelectorAll('[data-open="true"]')).toHaveLength(3); // D, G, B strings
   });
 
+  it("draws open strings as hollow ○, not as fretted dots", () => {
+    const { container } = render(<ChordDiagram shape={g("G")} chordName="G major" />);
+    const open = [...container.querySelectorAll('[data-open="true"]')];
+    expect(open).toHaveLength(3);
+    for (const marker of open) {
+      expect(marker.querySelector("circle")!.getAttribute("fill")).toBe("none");
+      expect(marker.querySelector("text")).toBeNull();
+    }
+  });
+
+  it("draws strings and the nut in theme colours that hold up in dark mode", () => {
+    const { container } = render(<ChordDiagram shape={g("G")} chordName="G major" />);
+    const strings = container.querySelectorAll("[data-string-line]");
+    expect(strings).toHaveLength(6);
+    strings.forEach((line) => expect(line).toHaveClass("stroke-string"));
+    expect(container.querySelector("[data-nut]")).toHaveClass("stroke-text-primary");
+  });
+
   it("lists its notes for screen readers", () => {
     render(<ChordDiagram shape={g("E")} chordName="G major" />);
     expect(screen.getByText("6th string, fret 3, G, root")).toBeInTheDocument();

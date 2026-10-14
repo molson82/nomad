@@ -35,7 +35,8 @@ export function NeckOverview({ tones, shape, chordName, onPickFret }: NeckOvervi
       className="w-full cursor-pointer select-none"
       onClick={pick}
     >
-      <rect x={NECK.nutX} y={8} width={fretLineX(MAX_FRET) - NECK.nutX} height={neckBottom - 8} className="fill-fretboard" />
+      {/* The wood starts left of the nut so open-string notes sit on it too. */}
+      <rect data-fretboard x={4} y={8} width={fretLineX(MAX_FRET) - 4} height={neckBottom - 8} rx={4} className="fill-fretboard" />
       {INLAYS.map((fret) => (
         <circle key={fret} cx={fretCenterX(fret)} cy={(stringY(2) + stringY(3)) / 2} r={5} fill="#C9AE7D" />
       ))}
@@ -48,12 +49,12 @@ export function NeckOverview({ tones, shape, chordName, onPickFret }: NeckOvervi
           x2={fretLineX(fret)}
           y1={8}
           y2={neckBottom}
-          stroke={fret === 0 ? "#161718" : "#B89B6A"}
+          className={fret === 0 ? "stroke-text-primary" : "stroke-fret-wire"}
           strokeWidth={fret === 0 ? 4 : 1.5}
         />
       ))}
       {[0, 1, 2, 3, 4, 5].map((string) => (
-        <line key={string} x1={NECK.nutX} x2={fretLineX(MAX_FRET)} y1={stringY(string)} y2={stringY(string)} stroke="#6B5A40" strokeWidth={1 + (5 - string) * 0.3} />
+        <line key={string} data-string-line x1={4} x2={fretLineX(MAX_FRET)} y1={stringY(string)} y2={stringY(string)} className="stroke-string" strokeWidth={1 + (5 - string) * 0.3} />
       ))}
       <rect
         data-window-low={shape.lowFret}
