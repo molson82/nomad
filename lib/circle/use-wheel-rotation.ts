@@ -34,6 +34,7 @@ export function useWheelRotation({ committedIndex, onCommit }: Options) {
   const targetRef = useRef(theta); // where the wheel is going (or rests)
   const velocityRef = useRef(0);
   const frameRef = useRef<number | null>(null);
+  const pendingCommitRef = useRef(false); // an animation that still owes a setRoot
   const readyRef = useRef(false);
   const dragRef = useRef<{ cx: number; cy: number; angle: number; time: number } | null>(null);
   const onCommitRef = useRef(onCommit);
@@ -51,7 +52,9 @@ export function useWheelRotation({ committedIndex, onCommit }: Options) {
     (target: number, commit: boolean) => {
       targetRef.current = target;
       cancelFrame(frameRef);
+      pendingCommitRef.current = commit;
       const finish = () => {
+        pendingCommitRef.current = false;
         velocityRef.current = 0;
         show(target);
         if (commit) onCommitRef.current(angleToKeyIndex(target));
@@ -88,6 +91,11 @@ export function useWheelRotation({ committedIndex, onCommit }: Options) {
     return () => {
       cancelAnimationFrame(id);
       cancelFrame(frameRef);
+      // Leaving mid-spring (a tab tap right after a swipe) still lands the turn.
+      if (pendingCommitRef.current) {
+        pendingCommitRef.current = false;
+        onCommitRef.current(angleToKeyIndex(targetRef.current));
+      }
     };
   }, []);
 

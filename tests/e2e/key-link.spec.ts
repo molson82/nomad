@@ -12,38 +12,38 @@ const go = async (page: Page, label: string) => {
 };
 
 test("tools keep their own key until linked", async ({ page }) => {
-  await page.goto("/circle/");
+  await page.goto("/chords/");
   await expect(toggle(page)).toHaveAttribute("aria-pressed", "false");
   await root(page, "G").click();
-  await go(page, "Chords");
+  await go(page, "Scales");
   await expect(root(page, "C")).toHaveAttribute("aria-pressed", "true");
 });
 
-test("linking shares the key across all three tools", async ({ page }) => {
-  await page.goto("/circle/");
+test("linking shares the key across tools", async ({ page }) => {
+  await page.goto("/chords/");
   await root(page, "G").click();
   await toggle(page).click();
   await expect(toggle(page)).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByTestId("link-dot").filter({ visible: true })).toHaveCount(3);
 
-  await go(page, "Chords");
+  await go(page, "Scales");
   await expect(root(page, "G")).toHaveAttribute("aria-pressed", "true");
   await root(page, "D").click();
-  await go(page, "Scales");
+  await go(page, "Chords");
   await expect(root(page, "D")).toHaveAttribute("aria-pressed", "true");
 });
 
 test("unlinking keeps the shared key, then tools diverge", async ({ page }) => {
-  await page.goto("/circle/");
+  await page.goto("/chords/");
   await toggle(page).click();
   await root(page, "A").click();
   await toggle(page).click();
   await expect(page.getByTestId("link-dot").filter({ visible: true })).toHaveCount(0);
 
-  await go(page, "Chords");
+  await go(page, "Scales");
   await expect(root(page, "A")).toHaveAttribute("aria-pressed", "true");
   await root(page, "E").click();
-  await go(page, "Circle");
+  await go(page, "Chords");
   await expect(root(page, "A")).toHaveAttribute("aria-pressed", "true");
 });
 

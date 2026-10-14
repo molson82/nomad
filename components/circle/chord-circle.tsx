@@ -1,7 +1,7 @@
 import { chordLongName, chordName, type Chord } from "@/lib/theory/chords";
 import { formatNote } from "@/lib/theory/spelling";
 
-const LABEL = "text-[11px] font-bold uppercase tracking-[0.08em] md:text-[13px] xl:text-xs";
+const LABEL = "text-[11px] font-bold tracking-[0.08em] md:text-[13px] xl:text-xs";
 
 // Phone / tablet (md) / desktop (xl), from the canvas artboards.
 const CIRCLE_SIZES = {

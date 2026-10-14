@@ -77,6 +77,14 @@ describe("useWheelRotation", () => {
       expect(result.current.theta).toBe(150); // D♭ the short way from C: -210 + 360
     });
 
+    it("commits a turn still settling when the page goes away (e.g. a tab tap)", () => {
+      const onCommit = vi.fn();
+      const { result, unmount } = renderHook(() => useWheelRotation({ committedIndex: 0, onCommit }));
+      act(() => result.current.step(1));
+      unmount();
+      expect(onCommit).toHaveBeenCalledWith(1);
+    });
+
     it("does not commit until the spring settles", () => {
       const onCommit = vi.fn();
       const { result } = renderHook(() => useWheelRotation({ committedIndex: 0, onCommit }));
