@@ -49,6 +49,13 @@ To test offline behavior by hand, use `pnpm build && pnpm preview`, never `pnpm 
   templates slid to the root (`cagedShapes`), sorted up the neck. The selected shape is stored by *name*
   (`nomad:chords:shape:v1`) so it survives root changes. The overview is one SVG `viewBox` from
   `neck-geometry.ts` that scales to every screen size.
+- **Scale Compass (`components/scales/`, `lib/scales/`, `lib/theory/scales.ts`):** the root is always the
+  major tonic; Minor is the relative minor (⑥), re-numbered from its own root. Six views (Major/Minor ×
+  Scale/Pentatonic/Blues) come from one major scale. Positions are ten fixed templates — five CAGED
+  full-scale positions (letters) and five pentatonic boxes (Box 1–5; Box N ↔ letter G E D C A) — and the
+  selection is stored as the letter (`nomad:scales:view:v1`) so scale ↔ pentatonic stays in the same region.
+- **Shared fretboard (`components/fretboard/`):** the SVG neck, diagram, position chips, focus card and root
+  stepper used by both compasses; the Chord Compass's components are thin adapters over them.
 - **Offline (`public/sw.js` + `scripts/build-sw.mjs` + `lib/sw/register.ts`):** after `next build`,
   the script lists every file in `out/` (pages by directory URL) and a content hash into `out/sw.js`.
   The SW precaches everything on install and serves cache-first. A new version waits until the user

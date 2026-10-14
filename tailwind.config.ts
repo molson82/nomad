@@ -10,6 +10,7 @@ const config: Config = {
         fretboard: "var(--color-fretboard)",
         string: "var(--color-string)",
         "fret-wire": "var(--color-fret-wire)",
+        relative: "var(--color-relative)",
         border: "var(--color-border)",
         hover: "var(--color-hover-bg)",
         ink: "var(--color-ink)",

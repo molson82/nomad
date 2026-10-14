@@ -28,6 +28,7 @@
   /* Fretboard line work; lightened for dark mode with the fretboard itself. */
   --color-string: #6b5a40;
   --color-fret-wire: #b89b6a;
+  --color-relative: #2f5bc0;
 }
 
 [data-tool="circle"] { --accent-hue: 95; --accent-l: 86%; }  /* Decoder yellow */
@@ -53,6 +54,7 @@
     --color-text-tertiary: oklch(60% 0.012 260);
     --color-string: #e2cfa8;
     --color-fret-wire: #a08862;
+    --color-relative: #8fb0ff;
   }
 
   :root,
