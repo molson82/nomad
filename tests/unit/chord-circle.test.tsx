@@ -29,6 +29,13 @@ describe("ChordButton", () => {
     expect(screen.getByTestId("step-badge")).toHaveTextContent("1·3");
   });
 
+  it("keeps the badge white in every theme (the card stays yellow in dark mode)", () => {
+    render(<ChordButton chord={g[0]} size="key" label="I · KEY" labelPosition="top" steps={[1]} onAdd={() => {}} />);
+    const badge = screen.getByTestId("step-badge");
+    expect(badge).toHaveClass("bg-white");
+    expect(badge).not.toHaveClass("bg-surface");
+  });
+
   it("has no badge when unused", () => {
     render(<ChordButton chord={g[5]} size="relative" label="vi" labelPosition="bottom" steps={[]} onAdd={() => {}} />);
     expect(screen.queryByTestId("step-badge")).toBeNull();

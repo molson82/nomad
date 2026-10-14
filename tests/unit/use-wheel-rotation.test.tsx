@@ -64,6 +64,48 @@ describe("useWheelRotation", () => {
     });
   });
 
+  describe("dragging", () => {
+    beforeEach(() => mockReducedMotion(true));
+
+    // A 200×200 wheel at the origin: center (100, 100), radius 100.
+    const pointer = (clientX: number, clientY: number, timeStamp: number) =>
+      ({
+        clientX,
+        clientY,
+        timeStamp,
+        pointerId: 1,
+        stopPropagation: vi.fn(),
+        currentTarget: {
+          getBoundingClientRect: () => ({ left: 0, top: 0, width: 200, height: 200 }),
+          setPointerCapture: vi.fn(),
+        },
+      }) as unknown as React.PointerEvent<SVGSVGElement>;
+
+    it("ignores a thumb wiggling on the center disc", () => {
+      const onCommit = vi.fn();
+      const { result } = renderHook(() => useWheelRotation({ committedIndex: 0, onCommit }));
+      const h = () => result.current.wheelHandlers;
+      act(() => h().onPointerDown(pointer(100, 95, 0)));
+      act(() => h().onPointerMove(pointer(106, 100, 16)));
+      act(() => h().onPointerMove(pointer(100, 106, 32)));
+      act(() => h().onPointerMove(pointer(94, 100, 48)));
+      expect(result.current.theta).toBeCloseTo(0); // -0 at rest is fine
+      act(() => h().onPointerUp(pointer(94, 100, 200)));
+      expect(onCommit).toHaveBeenLastCalledWith(0);
+    });
+
+    it("still turns when the drag is out on the rings", () => {
+      const onCommit = vi.fn();
+      const { result } = renderHook(() => useWheelRotation({ committedIndex: 0, onCommit }));
+      const h = () => result.current.wheelHandlers;
+      act(() => h().onPointerDown(pointer(100, 10, 0))); // 12 o'clock
+      act(() => h().onPointerMove(pointer(190, 100, 16))); // 3 o'clock: +90°
+      expect(result.current.theta).toBeCloseTo(90);
+      act(() => h().onPointerUp(pointer(190, 100, 200)));
+      expect(onCommit).toHaveBeenLastCalledWith(9); // E♭ comes to the top
+    });
+  });
+
   describe("with motion", () => {
     beforeEach(() => mockReducedMotion(false));
 

@@ -16,6 +16,9 @@ import {
 
 // A release this long after the last move carries no flick.
 const STALE_VELOCITY_MS = 80;
+// The black center disc (r 70 of 180): angles there swing wildly under a
+// resting thumb, so moves inside it re-anchor without turning the wheel.
+const CENTER_DISC = 70 / 180;
 
 function cancelFrame(frame: MutableRefObject<number | null>) {
   if (frame.current !== null) cancelAnimationFrame(frame.current);
@@ -36,7 +39,7 @@ export function useWheelRotation({ committedIndex, onCommit }: Options) {
   const frameRef = useRef<number | null>(null);
   const pendingCommitRef = useRef(false); // an animation that still owes a setRoot
   const readyRef = useRef(false);
-  const dragRef = useRef<{ cx: number; cy: number; angle: number; time: number } | null>(null);
+  const dragRef = useRef<{ cx: number; cy: number; radius: number; angle: number; time: number } | null>(null);
   const onCommitRef = useRef(onCommit);
 
   useEffect(() => {
@@ -126,7 +129,13 @@ export function useWheelRotation({ committedIndex, onCommit }: Options) {
     event.currentTarget.setPointerCapture(event.pointerId);
     cancelFrame(frameRef);
     velocityRef.current = 0;
-    dragRef.current = { cx, cy, angle: pointerAngle(cx, cy, event.clientX, event.clientY), time: event.timeStamp };
+    dragRef.current = {
+      cx,
+      cy,
+      radius: rect.width / 2,
+      angle: pointerAngle(cx, cy, event.clientX, event.clientY),
+      time: event.timeStamp,
+    };
   }, []);
 
   const onPointerMove = useCallback(
@@ -134,6 +143,11 @@ export function useWheelRotation({ committedIndex, onCommit }: Options) {
       const drag = dragRef.current;
       if (!drag) return;
       const angle = pointerAngle(drag.cx, drag.cy, event.clientX, event.clientY);
+      if (Math.hypot(event.clientX - drag.cx, event.clientY - drag.cy) < drag.radius * CENTER_DISC) {
+        velocityRef.current = 0;
+        dragRef.current = { ...drag, angle, time: event.timeStamp };
+        return;
+      }
       const delta = angleDelta(drag.angle, angle);
       const seconds = (event.timeStamp - drag.time) / 1000;
       if (seconds > 0) velocityRef.current = delta / seconds;

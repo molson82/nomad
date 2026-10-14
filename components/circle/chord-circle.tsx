@@ -36,7 +36,7 @@ export function StepBadge({ steps }: { steps: readonly number[] }) {
     <span
       data-testid="step-badge"
       aria-hidden
-      className="absolute -right-2 -top-1.5 grid h-[26px] min-w-[26px] place-items-center rounded-full border-2 border-ink bg-surface px-1 font-display text-sm font-bold text-ink md:h-[30px] md:min-w-[30px] md:text-base"
+      className="absolute -right-2 -top-1.5 grid h-[26px] min-w-[26px] place-items-center rounded-full border-2 border-ink bg-white px-1 font-display text-sm font-bold text-ink md:h-[30px] md:min-w-[30px] md:text-base"
     >
       {steps.join("·")}
     </span>
