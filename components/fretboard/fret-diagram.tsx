@@ -23,6 +23,7 @@ export function FretDiagram({ markers, lowFret, highFret, ariaLabel, showMuted, 
   // Room above the nut only when there's something to draw there.
   const TOP = open || muted.length > 0 ? 44 : 14;
   const start = open ? 1 : lowFret; // first fret row drawn
+  const woodTop = open && openStyle === "marker" ? TOP - 42 : TOP;
   const rows = Math.max(4, highFret - start + 1);
   const height = TOP + rows * FRET_H + (showNoteNames ? 40 : 16);
   const x = (string: number) => LEFT + string * STRING_GAP;
@@ -36,7 +37,8 @@ export function FretDiagram({ markers, lowFret, highFret, ariaLabel, showMuted, 
             {start}fr
           </text>
         )}
-        <rect x={LEFT - 20} y={TOP} width={5 * STRING_GAP + 40} height={rows * FRET_H} className="fill-fretboard" />
+        {/* Open-string markers (scales) sit on the wood above the nut, never on the page. */}
+        <rect data-wood x={LEFT - 20} y={woodTop} width={5 * STRING_GAP + 40} height={TOP + rows * FRET_H - woodTop} className="fill-fretboard" />
         {Array.from({ length: rows + 1 }, (_, i) => (
           <line key={i} x1={LEFT - 20} x2={x(5) + 20} y1={TOP + i * FRET_H} y2={TOP + i * FRET_H} className="stroke-fret-wire" strokeWidth={2} />
         ))}

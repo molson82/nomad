@@ -48,7 +48,7 @@ export function FocusCard(props: FocusCardProps) {
           ‹
         </button>
         <div className="flex flex-col items-center text-center xl:order-2 xl:flex-1 xl:items-start xl:text-left">
-          <h3 className="font-display text-[26px] font-semibold leading-tight xl:text-[30px]">{title}</h3>
+          <h3 className="text-balance font-display text-[26px] font-semibold leading-tight xl:text-[30px]">{title}</h3>
           <p className="text-[13px] text-text-secondary xl:text-sm">{subtitle}</p>
         </div>
         <button type="button" disabled={!canNext} aria-label={nextLabel} onClick={() => onStep(1)} className={`${ARROW} xl:order-last`}>
