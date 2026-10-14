@@ -4,7 +4,6 @@ import { formatNote } from "@/lib/theory/spelling";
 
 const LEFT = 70;
 const STRING_GAP = 40;
-const TOP = 44; // room above the nut for ○ and ×
 const FRET_H = 56;
 const ROLE_NAME: Record<Role, string> = { R: "root", "3": "3rd", "5": "5th" };
 
@@ -15,6 +14,8 @@ interface ChordDiagramProps {
 
 export function ChordDiagram({ shape, chordName }: ChordDiagramProps) {
   const open = shape.lowFret === 0;
+  // Room above the nut only when there's an ○ or × to draw there.
+  const TOP = open || shape.tones.length < 6 ? 44 : 14;
   const start = open ? 1 : shape.lowFret; // first fret row drawn
   const rows = Math.max(4, shape.highFret - start + 1);
   const height = TOP + rows * FRET_H + 40;
