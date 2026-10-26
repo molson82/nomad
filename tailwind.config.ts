@@ -11,6 +11,11 @@ const config: Config = {
         string: "var(--color-string)",
         "fret-wire": "var(--color-fret-wire)",
         relative: "var(--color-relative)",
+        tuning: {
+          DEFAULT: "var(--color-tuning)",
+          ink: "var(--color-tuning-ink)",
+          tint: "var(--color-tuning-tint)",
+        },
         border: "var(--color-border)",
         hover: "var(--color-hover-bg)",
         ink: "var(--color-ink)",

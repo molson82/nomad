@@ -1,9 +1,9 @@
 import type { LucideIcon } from "lucide-react";
-import { Disc3, Guitar, Music } from "lucide-react";
-import type { Tool } from "@/lib/tools";
+import { Disc3, Guitar, Music, SlidersVertical } from "lucide-react";
+import type { Page } from "@/lib/tools";
 
 export interface NavItemConfig {
-  tool: Tool;
+  page: Page;
   href: string;
   label: string; // short: tab bar and sidebar
   title: string; // full: page heading and phone header
@@ -11,7 +11,8 @@ export interface NavItemConfig {
 }
 
 export const NAV_ITEMS: NavItemConfig[] = [
-  { tool: "circle", href: "/circle/", label: "Circle", title: "Circle of Fifths", icon: Disc3 },
-  { tool: "chords", href: "/chords/", label: "Chords", title: "Chord Compass", icon: Guitar },
-  { tool: "scales", href: "/scales/", label: "Scales", title: "Scale Compass", icon: Music },
+  { page: "circle", href: "/circle/", label: "Circle", title: "Circle of Fifths", icon: Disc3 },
+  { page: "chords", href: "/chords/", label: "Chords", title: "Chord Compass", icon: Guitar },
+  { page: "scales", href: "/scales/", label: "Scales", title: "Scale Compass", icon: Music },
+  { page: "tuning", href: "/tuning/", label: "Tuning", title: "Tuning", icon: SlidersVertical },
 ];

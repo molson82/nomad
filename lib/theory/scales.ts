@@ -62,18 +62,19 @@ export function scaleName(root: Note, view: ScaleView): string {
   return `${formatNote(tonic)} ${view.tonality}${view.type === "scale" ? "" : ` ${view.type}`}`;
 }
 
-function noteAt(tones: Tone[], string: number, fret: number): ScaleNote | null {
-  const pitch = (TUNING[string] + fret) % 12;
+function noteAt(tones: Tone[], string: number, fret: number, open: readonly number[]): ScaleNote | null {
+  const pitch = (open[string] + fret) % 12;
   const tone = tones.find((t) => pitchClassOf(t.note) === pitch);
   return tone ? { string, fret, label: tone.label, note: tone.note, kind: tone.kind } : null;
 }
 
-export function neckNotes(root: Note, view: ScaleView): ScaleNote[] {
+// `open` is the open-string pitch of each string, low → high; standard tuning unless given.
+export function neckNotes(root: Note, view: ScaleView, open: readonly number[] = TUNING): ScaleNote[] {
   const tones = viewTones(root, view);
   const notes: ScaleNote[] = [];
   for (let string = 0; string < 6; string++) {
     for (let fret = 0; fret <= MAX_FRET; fret++) {
-      const note = noteAt(tones, string, fret);
+      const note = noteAt(tones, string, fret, open);
       if (note) notes.push(note);
     }
   }
@@ -98,9 +99,9 @@ const BOXES: number[][][] = [
   [[10, 12], [10, 12], [9, 12], [9, 12], [10, 12], [10, 12]],
 ];
 
-function makePosition(tones: Tone[], letter: PositionLetter, box: Position["box"], cells: [number, number][]): Position {
+function makePosition(tones: Tone[], letter: PositionLetter, box: Position["box"], cells: [number, number][], open: readonly number[]): Position {
   const notes = cells.map(([string, fret]) => {
-    const note = noteAt(tones, string, fret);
+    const note = noteAt(tones, string, fret, open);
     if (!note) throw new Error(`string ${string} fret ${fret} is not in the scale`);
     return note;
   });
@@ -108,7 +109,7 @@ function makePosition(tones: Tone[], letter: PositionLetter, box: Position["box"
   return { letter, box, notes, lowFret: Math.min(...frets), highFret: Math.max(...frets) };
 }
 
-export function positions(root: Note, view: ScaleView): Position[] {
+export function positions(root: Note, view: ScaleView, open: readonly number[] = TUNING): Position[] {
   const tones = viewTones(root, view);
   const scale = majorScale(circleKeyFor(root));
   let list: Position[];
@@ -117,23 +118,23 @@ export function positions(root: Note, view: ScaleView): Position[] {
     const rootPitch = pitchClassOf(scale[0]);
     list = POSITION_LETTERS.map((letter) => {
       const { rootString, offsets } = FULL[letter];
-      let rootFret = mod(rootPitch - TUNING[rootString], 12);
+      let rootFret = mod(rootPitch - open[rootString], 12);
       if (offsets.flat().some((offset) => rootFret + offset < 0)) rootFret += 12; // up an octave, not past the nut
-      return makePosition(tones, letter, null, offsets.flatMap((row, string) => row.map((o) => [string, rootFret + o] as [number, number])));
+      return makePosition(tones, letter, null, offsets.flatMap((row, string) => row.map((o) => [string, rootFret + o] as [number, number])), open);
     });
   } else {
-    const minorRootFret = mod(pitchClassOf(scale[5]) - TUNING[0], 12);
+    const minorRootFret = mod(pitchClassOf(scale[5]) - open[0], 12);
     const bluePitch = view.type === "blues" ? pitchClassOf(tones.find((t) => t.kind === "blue")!.note) : null;
     list = BOXES.map((rows, i) => {
       let base = minorRootFret;
       // Lowest octave that fits, like the full-scale positions, so box N shares letter N's region.
       if (rows.flat().every((offset) => base - 12 + offset >= 0)) base -= 12;
       const cells = rows.flatMap((row, string) => row.map((o) => [string, base + o] as [number, number]));
-      const position = makePosition(tones, POSITION_LETTERS[i], (i + 1) as Position["box"], cells);
+      const position = makePosition(tones, POSITION_LETTERS[i], (i + 1) as Position["box"], cells, open);
       if (bluePitch !== null) {
         for (let string = 0; string < 6; string++) {
           for (let fret = position.lowFret; fret <= position.highFret; fret++) {
-            if ((TUNING[string] + fret) % 12 === bluePitch) position.notes.push(noteAt(tones, string, fret)!);
+            if ((open[string] + fret) % 12 === bluePitch) position.notes.push(noteAt(tones, string, fret, open)!);
           }
         }
         position.notes.sort((a, b) => a.string - b.string || a.fret - b.fret);

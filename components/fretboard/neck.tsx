@@ -9,6 +9,10 @@ const INLAYS = [3, 5, 7, 9, 15];
 const FRET_NUMBERS = [3, 5, 7, 9, 12, 15];
 
 export type NeckMarker = { string: number; fret: number; label: string; kind: MarkerKind; inWindow: boolean };
+export type NeckString = { name: string; changed: boolean }; // changed: retuned from standard
+
+// String names sit in extra room left of the nut, so the fret geometry (and tap math) is unchanged.
+const NAME_GUTTER = 28;
 
 interface NeckProps {
   markers: NeckMarker[];
@@ -16,9 +20,12 @@ interface NeckProps {
   windowHigh: number;
   ariaLabel: string;
   onPickFret: (fret: number) => void;
+  strings?: NeckString[]; // low → high
 }
 
-export function Neck({ markers, windowLow, windowHigh, ariaLabel, onPickFret }: NeckProps) {
+export function Neck({ markers, windowLow, windowHigh, ariaLabel, onPickFret, strings }: NeckProps) {
+  const viewX = strings ? -NAME_GUTTER : 0;
+  const viewWidth = NECK.width - viewX;
   const windowLeft = windowLow === 0 ? 2 : fretLineX(windowLow - 1) - 4;
   const windowRight = fretLineX(windowHigh) + 4;
   const neckBottom = stringY(0) + 10;
@@ -26,11 +33,11 @@ export function Neck({ markers, windowLow, windowHigh, ariaLabel, onPickFret }: 
   // Taps are a shortcut; every position is also reachable by its chip.
   const pick = (event: MouseEvent<SVGSVGElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
-    onPickFret(fretAtX(((event.clientX - rect.left) / rect.width) * NECK.width));
+    onPickFret(fretAtX(viewX + ((event.clientX - rect.left) / rect.width) * viewWidth));
   };
 
   return (
-    <svg viewBox={`0 0 ${NECK.width} ${NECK.height}`} role="img" aria-label={ariaLabel} className="w-full cursor-pointer select-none" onClick={pick}>
+    <svg viewBox={`${viewX} 0 ${viewWidth} ${NECK.height}`} role="img" aria-label={ariaLabel} className="w-full cursor-pointer select-none" onClick={pick}>
       {/* The wood starts left of the nut so open-string notes sit on it too. */}
       <rect data-fretboard x={4} y={8} width={fretLineX(MAX_FRET) - 4} height={neckBottom - 8} rx={4} className="fill-fretboard" />
       {INLAYS.map((fret) => (
@@ -77,6 +84,20 @@ export function Neck({ markers, windowLow, windowHigh, ariaLabel, onPickFret }: 
           </g>
         );
       })}
+      {strings?.map((s, string) => (
+        <text
+          key={string}
+          data-string-name
+          x={-NAME_GUTTER / 2 + 2}
+          y={stringY(string) + 5}
+          textAnchor="middle"
+          fontSize={14}
+          fontWeight={600}
+          className={`font-display ${s.changed ? "fill-tuning-ink" : "fill-text-primary"}`}
+        >
+          {s.name}
+        </text>
+      ))}
       {FRET_NUMBERS.map((fret) => (
         <text key={fret} x={fretCenterX(fret)} y={NECK.height - 4} textAnchor="middle" fontSize={11} fontWeight={600} className="fill-text-secondary">
           {fret}

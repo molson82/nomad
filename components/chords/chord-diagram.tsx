@@ -3,9 +3,15 @@ import type { CagedShape } from "@/lib/theory/caged";
 import { STRING_ORDINALS, type Role } from "@/lib/theory/fretboard";
 import { formatNote } from "@/lib/theory/spelling";
 
-const ROLE_NAME: Record<Role, string> = { R: "root", "♭3": "flat 3rd", "3": "3rd", "5": "5th" };
+export const ROLE_NAME: Record<Role, string> = { R: "root", "♭3": "flat 3rd", "3": "3rd", "5": "5th" };
 
-export function ChordDiagram({ shape, chordName }: { shape: CagedShape; chordName: string }) {
+interface ChordDiagramProps {
+  shape: Pick<CagedShape, "tones" | "lowFret" | "highFret"> & { label?: string };
+  chordName: string;
+  ariaLabel?: string; // defaults to the CAGED shape's name
+}
+
+export function ChordDiagram({ shape, chordName, ariaLabel }: ChordDiagramProps) {
   return (
     <FretDiagram
       markers={shape.tones.map((t) => ({
@@ -18,7 +24,7 @@ export function ChordDiagram({ shape, chordName }: { shape: CagedShape; chordNam
       }))}
       lowFret={shape.lowFret}
       highFret={shape.highFret}
-      ariaLabel={`${chordName}, ${shape.label}-shape, frets ${shape.lowFret} to ${shape.highFret}`}
+      ariaLabel={ariaLabel ?? `${chordName}, ${shape.label}-shape, frets ${shape.lowFret} to ${shape.highFret}`}
       showMuted
       openStyle="hollow"
       showNoteNames

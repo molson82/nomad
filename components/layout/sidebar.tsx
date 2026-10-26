@@ -1,15 +1,16 @@
 import Link from "next/link";
 import { LinkDot, LinkToggle } from "@/components/key/link-toggle";
-import type { Tool } from "@/lib/tools";
+import type { Page } from "@/lib/tools";
 import { NAV_ITEMS } from "./nav-items";
 
 interface SidebarProps {
-  tool: Tool | null;
+  page: Page | null;
   linked: boolean;
+  showLink: boolean; // Tuning has no key to link
   onLinkedChange: (linked: boolean) => void;
 }
 
-export function Sidebar({ tool, linked, onLinkedChange }: SidebarProps) {
+export function Sidebar({ page, linked, showLink, onLinkedChange }: SidebarProps) {
   return (
     <aside className="sticky top-0 hidden h-dvh w-[88px] flex-shrink-0 flex-col items-center gap-5 border-r border-border bg-surface px-3 py-6 md:flex xl:w-[220px] xl:items-stretch xl:px-4">
       <div className="flex flex-col items-center gap-4 xl:flex-row xl:justify-between xl:px-2">
@@ -17,11 +18,11 @@ export function Sidebar({ tool, linked, onLinkedChange }: SidebarProps) {
           <span className="xl:hidden">N</span>
           <span className="hidden xl:inline">Nomad</span>
         </span>
-        <LinkToggle linked={linked} onChange={onLinkedChange} />
+        {showLink && <LinkToggle linked={linked} onChange={onLinkedChange} />}
       </div>
       <nav aria-label="Tool sidebar" className="flex w-full flex-col gap-1">
-        {NAV_ITEMS.map(({ tool: itemTool, href, label, icon: Icon }) => {
-          const active = itemTool === tool;
+        {NAV_ITEMS.map(({ page: itemPage, href, label, icon: Icon }) => {
+          const active = itemPage === page;
           return (
             <Link
               key={href}
@@ -34,7 +35,7 @@ export function Sidebar({ tool, linked, onLinkedChange }: SidebarProps) {
             >
               <span className="relative flex-shrink-0">
                 <Icon size={20} strokeWidth={1.9} />
-                <LinkDot visible={linked} />
+                <LinkDot visible={linked && itemPage !== "tuning"} />
               </span>
               <span className="hidden xl:inline">{label}</span>
             </Link>

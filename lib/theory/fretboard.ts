@@ -21,23 +21,30 @@ export function triad(root: Note, quality: Quality = "major"): [SpelledNote, Spe
   return quality === "major" ? [scale[0], scale[2], scale[4]] : [scale[5], scale[0], scale[2]];
 }
 
-export function toneAt(chord: readonly SpelledNote[], string: number, fret: number, quality: Quality = "major"): ChordTone {
-  const pitch = (TUNING[string] + fret) % 12;
+// `open` is the open-string pitch of each string, low → high; standard tuning unless given.
+export function toneAt(
+  chord: readonly SpelledNote[],
+  string: number,
+  fret: number,
+  quality: Quality = "major",
+  open: readonly number[] = TUNING,
+): ChordTone {
+  const pitch = (open[string] + fret) % 12;
   const i = chord.findIndex((note) => pitchClassOf(note) === pitch);
   if (i < 0) throw new Error(`string ${string} fret ${fret} is not a chord tone`);
   return { string, fret, role: ROLES[quality][i], note: chord[i] };
 }
 
-export function chordTones(root: Note, quality: Quality = "major"): ChordTone[] {
-  return chordTonesFor(triad(root, quality), quality);
+export function chordTones(root: Note, quality: Quality = "major", open: readonly number[] = TUNING): ChordTone[] {
+  return chordTonesFor(triad(root, quality), quality, open);
 }
 
-export function chordTonesFor(chord: readonly SpelledNote[], quality: Quality): ChordTone[] {
+export function chordTonesFor(chord: readonly SpelledNote[], quality: Quality, open: readonly number[] = TUNING): ChordTone[] {
   const pitches = chord.map(pitchClassOf);
   const tones: ChordTone[] = [];
-  TUNING.forEach((open, string) => {
+  open.forEach((pitch, string) => {
     for (let fret = 0; fret <= MAX_FRET; fret++) {
-      if (pitches.includes((open + fret) % 12)) tones.push(toneAt(chord, string, fret, quality));
+      if (pitches.includes((pitch + fret) % 12)) tones.push(toneAt(chord, string, fret, quality, open));
     }
   });
   return tones;

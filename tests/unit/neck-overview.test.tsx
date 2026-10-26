@@ -9,13 +9,13 @@ describe("NeckOverview", () => {
   const shape = cagedShapes("G").find((s) => s.name === "E")!;
 
   it("marks every chord tone on frets 0–15", () => {
-    const { container } = render(<NeckOverview tones={tones} shape={shape} chordName="G major" onPickFret={() => {}} />);
+    const { container } = render(<NeckOverview tones={tones} window={{ ...shape, label: `${shape.label}-shape` }} chordName="G major" onPickFret={() => {}} />);
     expect(container.querySelectorAll("[data-tone]")).toHaveLength(tones.length);
     expect(container.querySelectorAll('[data-tone][data-in-shape="true"]')).toHaveLength(6);
   });
 
   it("keeps open-string notes on the fretboard and strings in theme colours", () => {
-    const { container } = render(<NeckOverview tones={tones} shape={shape} chordName="G major" onPickFret={() => {}} />);
+    const { container } = render(<NeckOverview tones={tones} window={{ ...shape, label: `${shape.label}-shape` }} chordName="G major" onPickFret={() => {}} />);
     const wood = container.querySelector("[data-fretboard]")!;
     expect(Number(wood.getAttribute("x"))).toBeLessThanOrEqual(5); // behind the fret-0 markers too
     const strings = container.querySelectorAll("[data-string-line]");
@@ -24,7 +24,7 @@ describe("NeckOverview", () => {
   });
 
   it("frames the selected shape", () => {
-    const { container } = render(<NeckOverview tones={tones} shape={shape} chordName="G major" onPickFret={() => {}} />);
+    const { container } = render(<NeckOverview tones={tones} window={{ ...shape, label: `${shape.label}-shape` }} chordName="G major" onPickFret={() => {}} />);
     const frame = container.querySelector("[data-window-low]")!;
     expect(frame.getAttribute("data-window-low")).toBe("3");
     expect(frame.getAttribute("data-window-high")).toBe("5");

@@ -26,6 +26,17 @@ describe("Neck", () => {
   });
 });
 
+describe("Neck string names", () => {
+  const dadgad = ["D", "A", "D", "G", "A", "D"].map((name, i) => ({ name, changed: [true, false, false, false, true, true][i] }));
+  it("names each string left of the nut, marking retuned ones", () => {
+    const { container } = render(<Neck markers={markers} windowLow={0} windowHigh={3} ariaLabel="neck" onPickFret={() => {}} strings={dadgad} />);
+    const names = [...container.querySelectorAll("[data-string-name]")];
+    expect(names.map((n) => n.textContent)).toEqual(["D", "A", "D", "G", "A", "D"]);
+    expect(names[4].getAttribute("class")).toContain("fill-tuning-ink");
+    expect(names[2].getAttribute("class")).not.toContain("fill-tuning-ink");
+  });
+});
+
 describe("nearestByCentre", () => {
   it("returns the item whose window centre is nearest, lower on a tie", () => {
     const items = [

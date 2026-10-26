@@ -77,6 +77,14 @@ the Vercel dashboard.
   selection is stored as the letter (`nomad:scales:view:v1`) so scale ↔ pentatonic stays in the same region.
 - **Shared fretboard (`components/fretboard/`):** the SVG neck, diagram, position chips, focus card and root
   stepper used by both compasses; the Chord Compass's components are thin adapters over them.
+- **Tuning (`lib/theory/tuning.ts`, `lib/tuning/`, `components/tuning/`, `lib/theory/triads.ts`):** a fourth tab,
+  `/tuning/`. A tuning is six semitone offsets from standard (−5…+4, low → high) in `nomad:tuning:v1`, shared by
+  both compasses. Theory functions take the open-string pitches as a defaulted last `open` parameter
+  (`openPitches(tuning)`), so standard tuning is unchanged. A uniform tuning (every offset equal, e.g. half step
+  down) keeps CAGED shapes and positions, which simply slide; any other tuning switches the Chord Compass to
+  `triadsOn` (three adjacent strings, bass sets the inversion, either order above, ≤ 4 frets) with the selection in
+  `nomad:chords:triad:v1`, and the Scale Compass to `FRET_WINDOWS` (`nomad:scales:window:v1`). Tuning is a
+  `Page`, not a `Tool`: it has no key slot, no link toggle, and `/` never opens it.
 - **Theory notes (`lib/notes/`, `components/notes/`):** eight short "why" notes, each a pure function of the
   tool's live state returning `{ title, paragraphs }` (live values as `{ strong }`). `InfoButton` (ⓘ, 44px)
   portals a `NoteSheet` — a native `<dialog>` via `showModal()` — to `<body>` only while open and refocuses
