@@ -34,6 +34,8 @@ test("/ opens the last tool used", async ({ page }) => {
   await expect(page).toHaveURL(/\/circle\/$/);
   await page.getByRole("link", { name: "Scales" }).click();
   await expect(page).toHaveURL(/\/scales\/$/);
+  // The last tool is saved once the page has rendered; wait for it (see CLAUDE.md's e2e gotcha).
+  await expect(page.getByRole("link", { name: "Scales" })).toHaveAttribute("aria-current", "page");
   await page.goto("/");
   await expect(page).toHaveURL(/\/scales\/$/);
 });

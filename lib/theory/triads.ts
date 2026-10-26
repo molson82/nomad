@@ -45,3 +45,13 @@ export function triadsOn(chord: readonly SpelledNote[], quality: Quality, open: 
     (a, b) => a.lowFret - b.lowFret || a.highFret - b.highFret || INVERSIONS.indexOf(a.inversion) - INVERSIONS.indexOf(b.inversion),
   );
 }
+
+// How many playable triads each inversion has on each string set; 0 disables its chip.
+export function countTriads(chord: readonly SpelledNote[], quality: Quality, open: readonly number[]): Record<StringSet, Record<Inversion, number>> {
+  const counts = {} as Record<StringSet, Record<Inversion, number>>;
+  for (const set of STRING_SETS) {
+    counts[set] = { root: 0, first: 0, second: 0 };
+    for (const t of triadsOn(chord, quality, open, set)) counts[set][t.inversion]++;
+  }
+  return counts;
+}
