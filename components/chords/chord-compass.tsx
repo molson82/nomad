@@ -63,10 +63,10 @@ export function ChordCompass() {
   const triadNow = resolveTriad(triads, { ...triadSelection, set: triadSet });
   const triadIndex = triadNow ? triads.indexOf(triadNow) : -1;
   const pickTriadSet = (set: StringSet) =>
-    setTriadSelection({ set, inversion: triadSelection.inversion, centre: triadNow ? selectionFor(triadNow).centre : null });
+    setTriadSelection({ set, inversion: triadSelection.inversion, centre: triadNow ? selectionFor(triadNow).centre : null, frets: null });
   const pickInversion = (inversion: (typeof INVERSIONS)[number]) => {
     const lowest = triads.find((t) => t.inversion === inversion);
-    setTriadSelection(lowest ? selectionFor(lowest) : { set: triadSet, inversion, centre: null });
+    setTriadSelection(lowest ? selectionFor(lowest) : { set: triadSet, inversion, centre: null, frets: null });
   };
   const stepTriad = (direction: 1 | -1) => {
     const target = triads[triadIndex + direction];
@@ -108,7 +108,7 @@ export function ChordCompass() {
       return;
     }
     if (next === quality) return;
-    const result = switchQualityShape(root, quality, shape.name, next, lastSwitch.current);
+    const result = switchQualityShape(root, quality, shape.name, next, lastSwitch.current, shapeOpen);
     lastSwitch.current = result.memo;
     setShapeName(result.name);
     setQuality(next);

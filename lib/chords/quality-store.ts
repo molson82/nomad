@@ -1,6 +1,6 @@
 import { createPersistedStore } from "@/lib/storage/persisted-store";
 import { cagedShapes, type CagedShape, type ShapeName } from "@/lib/theory/caged";
-import type { Quality } from "@/lib/theory/fretboard";
+import { TUNING, type Quality } from "@/lib/theory/fretboard";
 import type { Note } from "@/lib/theory/notes";
 import { nearestShape } from "./shape-store";
 
@@ -19,8 +19,9 @@ export function parseQuality(raw: string | null): Quality {
 }
 
 // Switching quality stays in the same region of the neck.
-export function shapeForQuality(root: Note, from: CagedShape, to: Quality): ShapeName {
-  return nearestShape(cagedShapes(root, to), (from.lowFret + from.highFret) / 2);
+// `open` matters in uniform tunings: half step down slides every shape, so compare like with like.
+export function shapeForQuality(root: Note, from: CagedShape, to: Quality, open: readonly number[] = TUNING): ShapeName {
+  return nearestShape(cagedShapes(root, to, open), (from.lowFret + from.highFret) / 2);
 }
 
 export const qualityStore = createPersistedStore(QUALITY_KEY, parseQuality, DEFAULT_QUALITY);
@@ -34,9 +35,10 @@ export function switchQualityShape(
   name: ShapeName,
   to: Quality,
   memo: SwitchMemo,
+  open: readonly number[] = TUNING,
 ): { name: ShapeName; memo: SwitchMemo } {
   const back = memo && memo.root === root && memo.from === to && memo.toName === name;
-  const current = cagedShapes(root, quality).find((s) => s.name === name)!;
-  const target = back ? memo.fromName : shapeForQuality(root, current, to);
+  const current = cagedShapes(root, quality, open).find((s) => s.name === name)!;
+  const target = back ? memo.fromName : shapeForQuality(root, current, to, open);
   return { name: target, memo: { root, from: quality, fromName: name, toName: target } };
 }

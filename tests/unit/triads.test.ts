@@ -30,17 +30,29 @@ describe("triadsOn", () => {
 describe("resolveTriad", () => {
   const all = triadsOn(d, "major", dadgad, 0);
   it("keeps the inversion and picks the nearest window", () => {
-    expect(resolveTriad(all, { set: 0, inversion: "first", centre: 6 })!.frets).toEqual([4, 5, 7]);
-    expect(resolveTriad(all, { set: 0, inversion: "first", centre: null })!.frets).toEqual([4, 0, 0]);
+    expect(resolveTriad(all, { set: 0, inversion: "first", centre: 6, frets: null })!.frets).toEqual([4, 5, 7]);
+    expect(resolveTriad(all, { set: 0, inversion: "first", centre: null, frets: null })!.frets).toEqual([4, 0, 0]);
   });
   it("falls back to the lowest triad, or null", () => {
-    expect(resolveTriad(all.filter((t) => t.inversion !== "second"), { set: 0, inversion: "second", centre: 5 })!.frets).toEqual([0, 0, 4]);
-    expect(resolveTriad([], { set: 2, inversion: "root", centre: null })).toBeNull();
+    expect(resolveTriad(all.filter((t) => t.inversion !== "second"), { set: 0, inversion: "second", centre: 5, frets: null })!.frets).toEqual([0, 0, 4]);
+    expect(resolveTriad([], { set: 2, inversion: "root", centre: null, frets: null })).toBeNull();
   });
   it("records a triad's selection", () => {
-    expect(selectionFor(all[2])).toEqual({ set: 0, inversion: "first", centre: 5.5 });
+    expect(selectionFor(all[2])).toEqual({ set: 0, inversion: "first", centre: 5.5, frets: [4, 5, 7] });
+  });
+
+  it("tells apart two triads of one inversion that share a centre", () => {
+    const c = triadsOn(triad("C"), "major", openPitches([-5, -5, 1, 0, 0, 0]), 0);
+    const target = c.find((t) => t.frets.join("-") === "1-3-1")!;
+    expect(c.some((t) => t.frets.join("-") === "1-0-4")).toBe(true);
+    expect(resolveTriad(c, selectionFor(target))!.frets).toEqual([1, 3, 1]);
   });
   it.each([null, "{x", JSON.stringify({ set: 9, inversion: "root", centre: null })])("reads %s as the default", (raw) => {
-    expect(parseTriadSelection(raw)).toEqual({ set: 2, inversion: "root", centre: null });
+    expect(parseTriadSelection(raw)).toEqual({ set: 2, inversion: "root", centre: null, frets: null });
+  });
+
+  it("reads a stored selection with or without frets", () => {
+    expect(parseTriadSelection(JSON.stringify({ set: 0, inversion: "first", centre: 5.5, frets: [4, 5, 7] })).frets).toEqual([4, 5, 7]);
+    expect(parseTriadSelection(JSON.stringify({ set: 0, inversion: "first", centre: 5.5 })).frets).toBeNull();
   });
 });

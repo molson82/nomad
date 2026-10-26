@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { DEFAULT_QUALITY, parseQuality, shapeForQuality, switchQualityShape } from "@/lib/chords/quality-store";
 import { nearestShape } from "@/lib/chords/shape-store";
 import { cagedShapes } from "@/lib/theory/caged";
+import { TUNING_PRESETS, openPitches } from "@/lib/theory/tuning";
 import { NOTES, type Note } from "@/lib/theory/notes";
 
 const shape = (root: Note, quality: "major" | "minor", name: string) =>
@@ -62,5 +63,15 @@ describe("switchQualityShape", () => {
     expect(there.name).toBe("A");
     expect(switchQualityShape("D", "minor", "C", "major", there.memo).name).toBe(shapeForQuality("D", shape("D", "minor", "C"), "major"));
     expect(switchQualityShape("E", "minor", "A", "major", there.memo).name).toBe(shapeForQuality("E", shape("E", "minor", "A"), "major"));
+  });
+});
+
+describe("switching quality in a uniform tuning", () => {
+  const half = openPitches(TUNING_PRESETS.find((p) => p.id === "half-down")!.offsets);
+  const shapeIn = (quality: "major" | "minor", name: string) => cagedShapes("D", quality, half).find((s) => s.name === name)!;
+
+  it("stays in the same region for half step down, as in standard", () => {
+    expect(shapeForQuality("D", shapeIn("minor", "C"), "major", half)).toBe("D");
+    expect(switchQualityShape("D", "major", "D", "minor", null, half).name).toBe("C");
   });
 });
