@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 ## Project
 
 Nomad: a personal, mobile-first guitar theory app that digitizes three Noisy Clan "Decoder" tools
@@ -19,10 +21,11 @@ pnpm test:unit                               # Vitest + jsdom, tests/unit/**
 pnpm test:unit tests/unit/key-state.test.ts  # single file
 pnpm test:e2e                                # Playwright: builds + previews, projects iphone (WebKit) + desktop (Chromium)
 pnpm exec playwright test tests/e2e/offline.spec.ts --project=iphone
+pnpm exec playwright install chromium webkit # first e2e run on a machine
 pnpm icons                                   # re-render public/icons/*.png from the mark in scripts/make-icons.mjs
 ```
 
-To test offline behavior by hand, use `pnpm build && pnpm preview`, never `pnpm dev`.
+To test offline behavior by hand, use `pnpm build && pnpm preview`, never `pnpm dev`. CI runs lint, typecheck, unit and e2e.
 
 ## Deployment
 
@@ -41,8 +44,9 @@ the Vercel dashboard.
 
 ## Architecture
 
-- **Routes:** `/circle/`, `/chords/`, `/scales/` (`trailingSlash: true`). `/` redirects on the client to
-  the last tool (`nomad:last-tool`). `components/layout/nav-items.ts` is the single list of tools.
+- **Routes:** `/circle/`, `/chords/`, `/scales/`, `/tuning/` (`trailingSlash: true`). `/` redirects on the client to
+  the last tool (`nomad:last-tool`). `lib/tools.ts` separates `TOOLS` (have a key; the key-state store is built from
+  them) from `PAGES` (every tab); `components/layout/nav-items.ts` is the single list of tabs.
 - **Shell:** `AppShell` sets `data-tool` from the route. `theme.css` derives every accent color
   from that tool's `--accent-hue`/`--accent-l`. Phones (< md) get `MobileHeader` + `TabBar`;
   md and up get `Sidebar`. Dark mode follows the system.
@@ -93,8 +97,12 @@ the Vercel dashboard.
   the script lists every file in `out/` (pages by directory URL) and a content hash into `out/sw.js`.
   The SW precaches everything on install and serves cache-first. A new version waits until the user
   taps the update pill (`SKIP_WAITING` → reload); the app never reloads on its own.
-  Registration only happens in production builds.
-- **E2E gotcha:** many key-state assertions hold on more than one page; wait for navigation to land
+  Registration only happens in production builds. `public/sw.js` is a template with placeholders, and the script
+  throws on an already-filled file, so run it through `pnpm build`.
+- **Theme colors:** `tests/unit/contrast.test.tsx` reads some `--decoder-*` values straight out of `app/theme.css`
+  as `#rrggbb` and enforces contrast ratios, so a color change can fail a unit test.
+- **E2E gotchas:** outside CI, Playwright reuses whatever is already on :3000, so a stale `pnpm preview` means testing
+  an old build and a running `pnpm dev` means no service worker; stop them first. Many key-state assertions hold on more than one page; wait for navigation to land
   (e.g. `aria-current="page"` on the target tab) before asserting.
 
 ## Design docs
