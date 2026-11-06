@@ -26,7 +26,7 @@ describe("keysFor", () => {
     expect(keys.find((k) => k.key === "F")).toMatchObject({ outside: ["D♯"], role: "V" });
   });
 
-  it("gives a nameless chord roleless near-fits", () => {
+  it("gives a nameless chord roleless keys", () => {
     const odd = voicingOf([8, 4, null, null, null, 2])!;
     const keys = keysFor(odd, null);
     expect(keys.length).toBeGreaterThan(0);
