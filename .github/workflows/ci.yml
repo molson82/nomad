@@ -27,6 +27,8 @@ jobs:
   # Independent of the job above: they share nothing, and gating just serializes them.
   e2e:
     runs-on: ubuntu-latest
+    # A hung browser install once sat here for 35+ minutes; the default limit is 6 hours.
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
