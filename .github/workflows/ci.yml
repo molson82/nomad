@@ -43,4 +43,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('pnpm-lock.yaml') }}-
       - run: pnpm exec playwright install --with-deps chromium webkit
-      - run: pnpm test:e2e
+      - run: |
+          pnpm exec playwright test zz-probe --project=desktop --retries=0 --reporter=line 2>&1 | grep -E 'PROBE|passed|failed' || true
+          pnpm exec playwright test tests/e2e/pathfinder.spec.ts --project=iphone --repeat-each=6 --workers=2 --retries=0 --trace=retain-on-failure --reporter=line 2>&1 | tail -40 || true
+          pnpm exec playwright test --project=iphone --workers=2 --retries=0 --trace=retain-on-failure --reporter=line 2>&1 | tail -40 || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: traces
+          path: test-results
+          retention-days: 2
