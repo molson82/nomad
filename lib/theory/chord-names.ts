@@ -67,7 +67,7 @@ export function transposeVoicing(v: Voicing, semitones: number): Voicing {
 }
 
 // A key's own spelling when it has the note, otherwise the app's fixed name.
-function spellRoot(pitchClass: number, key?: CircleKey): SpelledNote {
+export function spellRoot(pitchClass: number, key?: CircleKey): SpelledNote {
   const inKey = key && majorScale(key).find((note) => pitchClassOf(note) === pitchClass);
   return inKey || spellAs(NOTES[pitchClass][0] as Letter, pitchClass);
 }
