@@ -84,7 +84,7 @@ Example throughout: Am7 at fret 5, `[5,7,5,5,5,5]` low → high, standard tuning
 - `pathfinder` is a `Page`, not a `Tool`: no key slot, not written to `nomad:last-tool`, and `/` never opens it.
 - `theme.css` gets `[data-tool="pathfinder"]` with a rose accent matching the canvas (`#D9468F`, ink `#A0246A`, tint
   `#FBE3EF`), expressed as hue/lightness like the other tools, and readable in dark mode with text on accent in
-  ink. A fixed `--color-pathfinder` is the ring color in every tool, in both themes, since it sits on the wood
+  ink. A fixed `--color-pathfinder` (`#DA4890`, nudged from the canvas so ink on it reaches 4.5:1) is the ring color in every tool, in both themes, since it sits on the wood
   like the fixed marker colors.
 - The link icon shows on Pathfinder only while linked (`showLink`). Tapping it unlinks as usual. It's hidden when
   unlinked because the page has no key of its own to link.
