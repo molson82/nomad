@@ -1,4 +1,4 @@
-import { Neck, type NeckString } from "@/components/fretboard/neck";
+import { Neck, type NeckString, type Ring } from "@/components/fretboard/neck";
 import type { ChordTone } from "@/lib/theory/fretboard";
 
 // The highlighted window: a CAGED shape, or a triad in other tunings.
@@ -10,9 +10,10 @@ interface NeckOverviewProps {
   chordName: string;
   onPickFret: (fret: number) => void;
   strings?: NeckString[];
+  rings?: Ring[];
 }
 
-export function NeckOverview({ tones, window, chordName, onPickFret, strings }: NeckOverviewProps) {
+export function NeckOverview({ tones, window, chordName, onPickFret, strings, rings }: NeckOverviewProps) {
   const inWindow = new Set(window.tones.map((t) => `${t.string}:${t.fret}`));
   return (
     <Neck
@@ -28,6 +29,7 @@ export function NeckOverview({ tones, window, chordName, onPickFret, strings }: 
       ariaLabel={`${chordName} across the neck, ${window.label} at frets ${window.lowFret} to ${window.highFret}`}
       onPickFret={onPickFret}
       strings={strings}
+      rings={rings}
     />
   );
 }

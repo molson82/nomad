@@ -1,3 +1,4 @@
+import type { Ring } from "@/components/fretboard/neck";
 import { FocusCard as SharedFocusCard } from "@/components/fretboard/focus-card";
 import type { Triad } from "@/lib/theory/triads";
 import { ChordDiagram } from "./chord-diagram";
@@ -6,6 +7,7 @@ import { setLabel } from "./triad-controls";
 const TITLE = { root: "Root position", first: "1st inversion", second: "2nd inversion" } as const;
 
 interface TriadFocusCardProps {
+  rings?: Ring[];
   triad: Triad;
   triads: Triad[]; // every playable triad on the string set, low → high
   chordName: string;
@@ -14,7 +16,7 @@ interface TriadFocusCardProps {
 
 export const triadTitle = (triad: Triad) => TITLE[triad.inversion];
 
-export function TriadFocusCard({ triad, triads, chordName, onStep }: TriadFocusCardProps) {
+export function TriadFocusCard({ triad, triads, chordName, onStep, rings }: TriadFocusCardProps) {
   const index = triads.indexOf(triad);
   const previous = triads[index - 1];
   const next = triads[index + 1];
@@ -34,7 +36,7 @@ export function TriadFocusCard({ triad, triads, chordName, onStep }: TriadFocusC
       index={index}
       onStep={onStep}
     >
-      <ChordDiagram shape={triad} chordName={chordName} ariaLabel={`${chordName}, ${TITLE[triad.inversion]} on strings ${strings}, ${frets}`} />
+      <ChordDiagram shape={triad} chordName={chordName} ariaLabel={`${chordName}, ${TITLE[triad.inversion]} on strings ${strings}, ${frets}`} rings={rings} />
     </SharedFocusCard>
   );
 }

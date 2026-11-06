@@ -1,3 +1,4 @@
+import type { Ring } from "@/components/fretboard/neck";
 import type { ReactNode } from "react";
 import { FocusCard as SharedFocusCard } from "@/components/fretboard/focus-card";
 import type { CagedShape } from "@/lib/theory/caged";
@@ -5,6 +6,7 @@ import { STRING_ORDINALS } from "@/lib/theory/fretboard";
 import { ChordDiagram } from "./chord-diagram";
 
 interface FocusCardProps {
+  rings?: Ring[];
   shape: CagedShape;
   shapes: CagedShape[]; // neck order
   chordName: string;
@@ -12,7 +14,7 @@ interface FocusCardProps {
   info?: ReactNode;
 }
 
-export function FocusCard({ shape, shapes, chordName, onStep, info }: FocusCardProps) {
+export function FocusCard({ shape, shapes, chordName, onStep, info, rings }: FocusCardProps) {
   const index = shapes.findIndex((s) => s.name === shape.name);
   const previous = shapes[index - 1];
   const next = shapes[index + 1];
@@ -30,7 +32,7 @@ export function FocusCard({ shape, shapes, chordName, onStep, info }: FocusCardP
       index={index}
       onStep={onStep}
     >
-      <ChordDiagram shape={shape} chordName={chordName} />
+      <ChordDiagram shape={shape} chordName={chordName} rings={rings} />
     </SharedFocusCard>
   );
 }

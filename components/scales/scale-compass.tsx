@@ -1,5 +1,6 @@
 "use client";
 
+import { ChordLegend } from "@/components/fretboard/chord-legend";
 import { FocusCard } from "@/components/fretboard/focus-card";
 import { InfoButton } from "@/components/notes/info-button";
 import { pentatonicNote } from "@/lib/notes/scale-notes";
@@ -8,6 +9,7 @@ import { Neck } from "@/components/fretboard/neck";
 import { PositionChips } from "@/components/fretboard/position-chips";
 import { nearestByCentre } from "@/lib/chords/neck-geometry";
 import { useToolKey } from "@/lib/key-state/hooks";
+import { useChordHighlight } from "@/lib/pathfinder/hooks";
 import { formulaLine, positionText } from "@/lib/scales/position-text";
 import { useScaleView } from "@/lib/scales/use-scale-view";
 import { useScaleWindow } from "@/lib/scales/use-scale-window";
@@ -41,6 +43,7 @@ type Region = {
 
 export function ScaleCompass() {
   const [root, setRoot] = useToolKey("scales");
+  const highlight = useChordHighlight("scales");
   const [state, update] = useScaleView();
   const [windowIndex, setWindowIndex] = useScaleWindow();
   const [tuning] = useTuning();
@@ -120,7 +123,9 @@ export function ScaleCompass() {
             ariaLabel={`${name} across the neck, ${region.name} at ${range}`}
             onPickFret={(fret) => select(nearestByCentre(regions, fret).id)}
             strings={open.map((pitch, s) => ({ name: pitchName(pitch), changed: tuning[s] !== 0 }))}
+            rings={highlight?.rings}
           />
+          {highlight && <ChordLegend name={highlight.name} />}
           <div className="xl:hidden">{chips}</div>
         </section>
         <div className="flex flex-col gap-4 xl:flex-row xl:items-stretch xl:gap-5">
@@ -160,6 +165,7 @@ export function ScaleCompass() {
               showMuted={false}
               openStyle="marker"
               showNoteNames={false}
+              rings={highlight?.rings}
             />
           </FocusCard>
         </div>

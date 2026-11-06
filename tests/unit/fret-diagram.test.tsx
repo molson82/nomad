@@ -48,3 +48,15 @@ describe("FretDiagram", () => {
     expect([...container.querySelectorAll("[data-role]")].map((m) => m.getAttribute("data-role"))).toEqual(["R", "♭3", "♭5"]);
   });
 });
+
+describe("FretDiagram rings", () => {
+  const base = { markers: [] as DiagramMarker[], ariaLabel: "d", showMuted: false, openStyle: "marker", showNoteNames: false } as const;
+
+  it("draws a ring inside the rows and skips one outside", () => {
+    const rings = [{ string: 0, fret: 5 }];
+    const inside = render(<FretDiagram {...base} lowFret={5} highFret={8} rings={rings} />);
+    expect(inside.container.querySelectorAll("[data-ring]")).toHaveLength(1);
+    const outside = render(<FretDiagram {...base} lowFret={8} highFret={11} rings={rings} />);
+    expect(outside.container.querySelectorAll("[data-ring]")).toHaveLength(0);
+  });
+});

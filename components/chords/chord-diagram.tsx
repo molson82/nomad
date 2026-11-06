@@ -1,4 +1,5 @@
 import { FretDiagram } from "@/components/fretboard/fret-diagram";
+import type { Ring } from "@/components/fretboard/neck";
 import type { CagedShape } from "@/lib/theory/caged";
 import { STRING_ORDINALS, type Role } from "@/lib/theory/fretboard";
 import { formatNote } from "@/lib/theory/spelling";
@@ -9,9 +10,10 @@ interface ChordDiagramProps {
   shape: Pick<CagedShape, "tones" | "lowFret" | "highFret"> & { label?: string };
   chordName: string;
   ariaLabel?: string; // defaults to the CAGED shape's name
+  rings?: Ring[];
 }
 
-export function ChordDiagram({ shape, chordName, ariaLabel }: ChordDiagramProps) {
+export function ChordDiagram({ shape, chordName, ariaLabel, rings }: ChordDiagramProps) {
   return (
     <FretDiagram
       markers={shape.tones.map((t) => ({
@@ -28,6 +30,7 @@ export function ChordDiagram({ shape, chordName, ariaLabel }: ChordDiagramProps)
       showMuted
       openStyle="hollow"
       showNoteNames
+      rings={rings}
     />
   );
 }

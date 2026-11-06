@@ -1,4 +1,5 @@
 import { MARKER_STYLE, type MarkerKind } from "./marker-style";
+import type { Ring } from "./neck";
 
 const LEFT = 70;
 const STRING_GAP = 40;
@@ -14,9 +15,10 @@ interface FretDiagramProps {
   showMuted: boolean; // × over strings with no marker (chords)
   openStyle: "hollow" | "marker"; // ○ for chords, the note's marker for scales
   showNoteNames: boolean; // one note per string under the diagram (chords)
+  rings?: Ring[];
 }
 
-export function FretDiagram({ markers, lowFret, highFret, ariaLabel, showMuted, openStyle, showNoteNames }: FretDiagramProps) {
+export function FretDiagram({ markers, lowFret, highFret, ariaLabel, showMuted, openStyle, showNoteNames, rings = [] }: FretDiagramProps) {
   const open = lowFret === 0;
   const used = new Set(markers.map((m) => m.string));
   const muted = showMuted ? [0, 1, 2, 3, 4, 5].filter((s) => !used.has(s)) : [];
@@ -84,6 +86,21 @@ export function FretDiagram({ markers, lowFret, highFret, ariaLabel, showMuted, 
             </g>
           );
         })}
+        {rings
+          .filter((r) => (r.fret === 0 ? open : r.fret >= start && r.fret < start + rows))
+          .map((r) => (
+            <circle
+              key={`${r.string}:${r.fret}`}
+              data-ring
+              cx={x(r.string)}
+              cy={y(r.fret)}
+              r={21}
+              fill="none"
+              strokeWidth={3.5}
+              strokeDasharray={r.dashed ? "6 4" : undefined}
+              className="stroke-pathfinder"
+            />
+          ))}
       </svg>
       <ul className="sr-only">
         {markers.map((m) => (

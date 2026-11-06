@@ -26,6 +26,26 @@ describe("Neck", () => {
   });
 });
 
+describe("Neck rings", () => {
+  it("paints rings above the notes, dashing the ones asked to be", () => {
+    const { container } = render(
+      <Neck markers={markers} windowLow={0} windowHigh={3} ariaLabel="neck" onPickFret={() => {}} rings={[{ string: 0, fret: 3 }, { string: 1, fret: 1, dashed: true }]} />,
+    );
+    const rings = [...container.querySelectorAll("[data-ring]")];
+    expect(rings).toHaveLength(2);
+    expect(rings[0].getAttribute("class")).toBe("stroke-pathfinder");
+    expect(rings[0].getAttribute("stroke-dasharray")).toBeNull();
+    expect(rings[1].getAttribute("stroke-dasharray")).not.toBeNull();
+    const last = container.querySelectorAll("[data-tone]");
+    expect(last[last.length - 1].compareDocumentPosition(rings[0]) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it("draws no window band without a window", () => {
+    const { container } = render(<Neck markers={[]} ariaLabel="neck" />);
+    expect(container.querySelector("[data-window-low]")).toBeNull();
+  });
+});
+
 describe("Neck string names", () => {
   const dadgad = ["D", "A", "D", "G", "A", "D"].map((name, i) => ({ name, changed: [true, false, false, false, true, true][i] }));
   it("names each string left of the nut, marking retuned ones", () => {
