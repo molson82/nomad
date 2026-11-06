@@ -1,24 +1,35 @@
 "use client";
 
 import { useState } from "react";
-import { usePathfinder } from "@/lib/pathfinder/hooks";
+import { resetPathfinder, usePathfinder } from "@/lib/pathfinder/hooks";
 import type { TryChord } from "@/lib/pathfinder/paths";
 import { canBuildPath } from "@/lib/pathfinder/state";
 import type { Note } from "@/lib/theory/notes";
 import { useTuning } from "@/lib/tuning/use-tuning";
 import { BuildScreen } from "./build-screen";
 import { KeysScreen } from "./keys-screen";
+import { LockedScreen } from "./locked-screen";
 import { TryScreen } from "./try-screen";
 
 export function PathfinderPage() {
-  const [{ frets }] = usePathfinder();
+  const [{ frets, lock }] = usePathfinder();
   const [tuning] = useTuning();
   const [building, setBuilding] = useState(true);
   const [trying, setTrying] = useState<{ key: Note; chord: TryChord } | null>(null);
   const [lastKey, setLastKey] = useState<Note | undefined>();
 
   let screen;
-  if (building || !canBuildPath(frets, tuning)) {
+  if (lock) {
+    screen = (
+      <LockedScreen
+        lock={lock}
+        onReset={() => {
+          resetPathfinder();
+          setBuilding(true);
+        }}
+      />
+    );
+  } else if (building || !canBuildPath(frets, tuning)) {
     screen = (
       <BuildScreen
         onBuild={() => {
