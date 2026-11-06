@@ -9,6 +9,7 @@ const INLAYS = [3, 5, 7, 9, 15];
 const FRET_NUMBERS = [3, 5, 7, 9, 12, 15];
 
 export type NeckMarker = { string: number; fret: number; label: string; kind: MarkerKind; inWindow: boolean };
+export type Ring = { string: number; fret: number; dashed?: boolean }; // your chord, over whatever the tool shows
 export type NeckString = { name: string; changed: boolean }; // changed: retuned from standard
 
 // String names sit in extra room left of the nut, so the fret geometry (and tap math) is unchanged.
@@ -16,28 +17,30 @@ const NAME_GUTTER = 28;
 
 interface NeckProps {
   markers: NeckMarker[];
-  windowLow: number;
-  windowHigh: number;
+  windowLow?: number; // no band without a window
+  windowHigh?: number;
   ariaLabel: string;
-  onPickFret: (fret: number) => void;
+  onPickFret?: (fret: number) => void; // read-only without it
   strings?: NeckString[]; // low → high
+  rings?: Ring[];
 }
 
-export function Neck({ markers, windowLow, windowHigh, ariaLabel, onPickFret, strings }: NeckProps) {
+export function Neck({ markers, windowLow, windowHigh, ariaLabel, onPickFret, strings, rings = [] }: NeckProps) {
   const viewX = strings ? -NAME_GUTTER : 0;
   const viewWidth = NECK.width - viewX;
-  const windowLeft = windowLow === 0 ? 2 : fretLineX(windowLow - 1) - 4;
-  const windowRight = fretLineX(windowHigh) + 4;
+  const hasWindow = windowLow !== undefined && windowHigh !== undefined;
+  const windowLeft = !hasWindow || windowLow === 0 ? 2 : fretLineX(windowLow - 1) - 4;
+  const windowRight = hasWindow ? fretLineX(windowHigh) + 4 : 0;
   const neckBottom = stringY(0) + 10;
 
   // Taps are a shortcut; every position is also reachable by its chip.
   const pick = (event: MouseEvent<SVGSVGElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
-    onPickFret(fretAtX(viewX + ((event.clientX - rect.left) / rect.width) * viewWidth));
+    onPickFret?.(fretAtX(viewX + ((event.clientX - rect.left) / rect.width) * viewWidth));
   };
 
   return (
-    <svg viewBox={`${viewX} 0 ${viewWidth} ${NECK.height}`} role="img" aria-label={ariaLabel} className="w-full cursor-pointer select-none" onClick={pick}>
+    <svg viewBox={`${viewX} 0 ${viewWidth} ${NECK.height}`} role="img" aria-label={ariaLabel} className={`w-full select-none ${onPickFret ? "cursor-pointer" : ""}`} onClick={onPickFret && pick}>
       {/* The wood starts left of the nut so open-string notes sit on it too. */}
       <rect data-fretboard x={4} y={8} width={fretLineX(MAX_FRET) - 4} height={neckBottom - 8} rx={4} className="fill-fretboard" />
       {INLAYS.map((fret) => (
@@ -59,18 +62,20 @@ export function Neck({ markers, windowLow, windowHigh, ariaLabel, onPickFret, st
       {[0, 1, 2, 3, 4, 5].map((string) => (
         <line key={string} data-string-line x1={4} x2={fretLineX(MAX_FRET)} y1={stringY(string)} y2={stringY(string)} className="stroke-string" strokeWidth={1 + (5 - string) * 0.3} />
       ))}
-      <rect
-        data-window-low={windowLow}
-        data-window-high={windowHigh}
-        x={windowLeft}
-        y={2}
-        width={windowRight - windowLeft}
-        height={neckBottom + 4}
-        rx={8}
-        className="fill-accent stroke-accent"
-        fillOpacity={0.12}
-        strokeWidth={2.5}
-      />
+      {hasWindow && (
+        <rect
+          data-window-low={windowLow}
+          data-window-high={windowHigh}
+          x={windowLeft}
+          y={2}
+          width={windowRight - windowLeft}
+          height={neckBottom + 4}
+          rx={8}
+          className="fill-accent stroke-accent"
+          fillOpacity={0.12}
+          strokeWidth={2.5}
+        />
+      )}
       {markers.map((m) => {
         const style = MARKER_STYLE[m.kind];
         return (
@@ -84,6 +89,21 @@ export function Neck({ markers, windowLow, windowHigh, ariaLabel, onPickFret, st
           </g>
         );
       })}
+      {rings.map((r) => (
+        <circle
+          key={`${r.string}:${r.fret}`}
+          data-ring
+          data-string={r.string}
+          data-fret={r.fret}
+          cx={fretCenterX(r.fret)}
+          cy={stringY(r.string)}
+          r={13}
+          fill="none"
+          strokeWidth={r.dashed ? 2.5 : 4}
+          strokeDasharray={r.dashed ? "4 3" : undefined}
+          className="stroke-pathfinder"
+        />
+      ))}
       {strings?.map((s, string) => (
         <text
           key={string}

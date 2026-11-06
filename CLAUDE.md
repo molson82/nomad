@@ -44,7 +44,7 @@ the Vercel dashboard.
 
 ## Architecture
 
-- **Routes:** `/circle/`, `/chords/`, `/scales/`, `/tuning/` (`trailingSlash: true`). `/` redirects on the client to
+- **Routes:** `/circle/`, `/chords/`, `/scales/`, `/pathfinder/`, `/tuning/` (`trailingSlash: true`). `/` redirects on the client to
   the last tool (`nomad:last-tool`). `lib/tools.ts` separates `TOOLS` (have a key; the key-state store is built from
   them) from `PAGES` (every tab); `components/layout/nav-items.ts` is the single list of tabs.
 - **Shell:** `AppShell` sets `data-tool` from the route. `theme.css` derives every accent color
@@ -89,6 +89,12 @@ the Vercel dashboard.
   `triadsOn` (three adjacent strings, bass sets the inversion, either order above, ≤ 4 frets) with the selection in
   `nomad:chords:triad:v1`, and the Scale Compass to `FRET_WINDOWS` (`nomad:scales:window:v1`). Tuning is a
   `Page`, not a `Tool`: it has no key slot, no link toggle, and `/` never opens it.
+- **Pathfinder (`lib/theory/chord-names.ts`, `lib/pathfinder/`, `components/pathfinder/`):** a `Page`, not a `Tool`: it ignores
+  the key until Lock in. Notes are placed per string on `TapNeck` (scrolls below `lg`). `chordNames` names a voicing from
+  its pitch classes and lowest *pitch*; `paths.ts` works out keys, solo regions, triads and chords to try. `nomad:pathfinder:v1`
+  holds `{ frets, lock }`; Lock in links the tools on the key, and Reset only removes a link lock-in made. The rings in
+  Chords and Scales are computed from `lock` by `useChordHighlight` (never stored), so they follow each tool's key and the
+  tuning. `triad(root, "minor")` means the key's *relative* minor, so build a triad from a chord root as a spelled triple.
 - **Theory notes (`lib/notes/`, `components/notes/`):** eight short "why" notes, each a pure function of the
   tool's live state returning `{ title, paragraphs }` (live values as `{ strong }`). `InfoButton` (ⓘ, 44px)
   portals a `NoteSheet` — a native `<dialog>` via `showModal()` — to `<body>` only while open and refocuses

@@ -15,6 +15,8 @@ test("the whole app works offline after the first visit", async ({ page, context
   await expect(page.getByRole("heading", heading("Chord Compass"))).toBeVisible();
   await page.getByRole("link", { name: "Scales" }).click();
   await expect(page.getByRole("heading", heading("Scale Compass"))).toBeVisible();
+  await page.getByRole("link", { name: "Pathfinder" }).click();
+  await expect(page.getByRole("heading", heading("Pathfinder"))).toBeVisible();
 
   // A URL the build never produced falls back to the Circle, not a browser error page.
   await page.goto("/nowhere/");

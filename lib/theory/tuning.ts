@@ -29,6 +29,9 @@ export function openPitches(t: TuningOffsets): number[] {
   return TUNING.map((open, s) => (((open + t[s]) % 12) + 12) % 12);
 }
 
+// For a neck's string labels; `changed` marks a string retuned from standard.
+export const stringLabels = (t: TuningOffsets) => openPitches(t).map((pitch, s) => ({ name: pitchName(pitch), changed: t[s] !== 0 }));
+
 export const isUniform = (t: TuningOffsets) => t.every((o) => o === t[0]);
 export const isStandard = (t: TuningOffsets) => t.every((o) => o === 0);
 

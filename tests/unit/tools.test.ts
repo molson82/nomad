@@ -15,6 +15,13 @@ describe("toolFromPath", () => {
   });
 });
 
+describe("pathfinder", () => {
+  it("is a page, not a tool", () => {
+    expect(pageFromPath("/pathfinder/")).toBe("pathfinder");
+    expect(toolFromPath("/pathfinder/")).toBeNull();
+  });
+});
+
 describe("isTool", () => {
   it("accepts only the three tools", () => {
     expect(isTool("circle")).toBe(true);

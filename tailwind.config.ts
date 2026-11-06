@@ -11,6 +11,7 @@ const config: Config = {
         string: "var(--color-string)",
         "fret-wire": "var(--color-fret-wire)",
         relative: "var(--color-relative)",
+        pathfinder: "var(--color-pathfinder)",
         tuning: {
           DEFAULT: "var(--color-tuning)",
           ink: "var(--color-tuning-ink)",

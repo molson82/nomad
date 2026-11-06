@@ -2,8 +2,8 @@ export const TOOLS = ["circle", "chords", "scales"] as const;
 
 export type Tool = (typeof TOOLS)[number];
 
-// Every tab. Tuning has no key, so it stays out of TOOLS (which the key-state store is built from).
-export const PAGES = [...TOOLS, "tuning"] as const;
+// Every tab. Pathfinder and Tuning have no key, so they stay out of TOOLS (which the key-state store is built from).
+export const PAGES = [...TOOLS, "pathfinder", "tuning"] as const;
 export type Page = (typeof PAGES)[number];
 
 export const LAST_TOOL_KEY = "nomad:last-tool";

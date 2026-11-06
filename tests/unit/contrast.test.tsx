@@ -30,6 +30,16 @@ describe("contrast", () => {
     expect(contrast(MARKER_STYLE.blue.text, MARKER_STYLE.blue.fill)).toBeGreaterThanOrEqual(4.5);
   });
 
+  it("keeps ink readable on your placed notes and the rose accent", () => {
+    expect(contrast(MARKER_STYLE.chosen.text, MARKER_STYLE.chosen.fill)).toBeGreaterThanOrEqual(4.5);
+    expect(contrast("#161718", themeVar("color-pathfinder"))).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it("rings stand off the wood in both themes", () => {
+    expect(contrast(themeVar("color-pathfinder"), "#e8d3a9")).toBeGreaterThanOrEqual(2);
+    expect(MARKER_STYLE.chosen.fill.toLowerCase()).toBe(themeVar("color-pathfinder"));
+  });
+
   it("rings the root disc in dark mode so it stands off the page", () => {
     const { container } = render(<RootStepper name="G" onStep={() => {}} />);
     const disc = container.querySelector("span")!;

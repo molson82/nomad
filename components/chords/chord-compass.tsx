@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import { ChordLegend } from "@/components/fretboard/chord-legend";
 import { MajorMinorToggle } from "@/components/fretboard/major-minor-toggle";
 import { InfoButton } from "@/components/notes/info-button";
 import { cagedNote } from "@/lib/notes/chord-notes";
@@ -12,6 +13,7 @@ import { useChordQuality } from "@/lib/chords/use-chord-quality";
 import { useProgressionStep } from "@/lib/chords/use-progression-step";
 import { useSelectedShape } from "@/lib/chords/use-selected-shape";
 import { useToolKey } from "@/lib/key-state/hooks";
+import { useChordHighlight } from "@/lib/pathfinder/hooks";
 import { cagedShapesFor } from "@/lib/theory/caged";
 import { TUNING, chordTonesFor, triad, type Quality } from "@/lib/theory/fretboard";
 import { stepNote } from "@/lib/theory/notes";
@@ -24,7 +26,7 @@ import { resolveTriad, selectionFor } from "@/lib/chords/triad-store";
 import { useTriadSelection } from "@/lib/chords/use-triad-selection";
 import { nearestByCentre } from "@/lib/chords/neck-geometry";
 import { INVERSIONS, STRING_SETS, countTriads, triadsOn, type StringSet } from "@/lib/theory/triads";
-import { isUniform, openPitches, pitchName } from "@/lib/theory/tuning";
+import { isUniform, openPitches, stringLabels } from "@/lib/theory/tuning";
 import { useTuning } from "@/lib/tuning/use-tuning";
 import { TuningPill } from "@/components/tuning/tuning-pill";
 import { ProgressionStrip } from "./progression-strip";
@@ -34,6 +36,7 @@ import { ShapeChips } from "./shape-chips";
 export function ChordCompass() {
   const [root, setRoot] = useToolKey("chords");
   const [quality, setQuality] = useChordQuality();
+  const highlight = useChordHighlight("chords");
   const lastSwitch = useRef<SwitchMemo>(null);
   const [progression] = useProgression();
   const steps = progressionSteps(root, progression.degrees);
@@ -46,7 +49,7 @@ export function ChordCompass() {
   const open = openPitches(tuning);
   // CAGED shapes only hold when every string moved by the same amount; otherwise show triads.
   const byShape = isUniform(tuning);
-  const strings = open.map((pitch, s) => ({ name: pitchName(pitch), changed: tuning[s] !== 0 }));
+  const strings = stringLabels(tuning);
   const [shapeName, setShapeName] = useSelectedShape();
   // In other tunings the CAGED templates don't land on chord tones, so they stay on standard (unshown) there.
   const shapeOpen = byShape ? open : TUNING;
@@ -135,6 +138,7 @@ export function ChordCompass() {
               chordName={chordName}
               onPickFret={(fret) => setShapeName(nearestShape(shapes, fret))}
               strings={strings}
+              rings={highlight?.rings}
             />
           ) : (
             <NeckOverview
@@ -143,8 +147,10 @@ export function ChordCompass() {
               chordName={chordName}
               onPickFret={(fret) => triads.length > 0 && setTriadSelection(selectionFor(nearestByCentre(triads, fret)))}
               strings={strings}
+              rings={highlight?.rings}
             />
           )}
+          {highlight && <ChordLegend name={highlight.name} />}
           <div className="xl:hidden">{chips}</div>
         </section>
         <div className="flex flex-col gap-4 xl:flex-row xl:items-stretch xl:gap-5">
@@ -163,10 +169,11 @@ export function ChordCompass() {
               shapes={shapes}
               chordName={chordName}
               onStep={stepShape}
+              rings={highlight?.rings}
               info={<InfoButton label="About CAGED shapes" note={cagedNote(chord, chordQuality, shapes)} />}
             />
           ) : triadNow ? (
-            <TriadFocusCard triad={triadNow} triads={triads} chordName={chordName} onStep={stepTriad} />
+            <TriadFocusCard triad={triadNow} triads={triads} chordName={chordName} onStep={stepTriad} rings={highlight?.rings} />
           ) : (
             <p className="rounded-[22px] border border-border bg-surface p-4 text-sm text-text-secondary">
               No triad of {chordName} fits within four frets on any three strings in this tuning.
