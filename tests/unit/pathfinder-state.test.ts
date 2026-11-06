@@ -95,7 +95,10 @@ describe("highlightFrets", () => {
 
   it("stays on the neck through key and tuning together", () => {
     const moved = highlightFrets(lock({ frets: [0, 1, 15, 14, 2, 0] }), "F#", [-5, 4, -3, 2, -1, 1]);
-    for (const fret of moved) expect(fret).toBeGreaterThanOrEqual(0), expect(fret).toBeLessThanOrEqual(15);
+    for (const fret of moved) {
+      expect(fret).toBeGreaterThanOrEqual(0);
+      expect(fret).toBeLessThanOrEqual(15);
+    }
   });
 });
 
