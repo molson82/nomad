@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { LinkDot } from "@/components/key/link-toggle";
-import type { Page } from "@/lib/tools";
+import { isTool, type Page } from "@/lib/tools";
 import { NAV_ITEMS } from "./nav-items";
 
 export function TabBar({ page, linked }: { page: Page | null; linked: boolean }) {
@@ -22,7 +22,7 @@ export function TabBar({ page, linked }: { page: Page | null; linked: boolean })
           >
             <span className="relative">
               <Icon size={22} strokeWidth={1.9} />
-              <LinkDot visible={linked && itemPage !== "tuning"} />
+              <LinkDot visible={linked && isTool(itemPage)} />
             </span>
             <span className={`text-[11px] ${active ? "font-semibold" : "font-medium"}`}>{label}</span>
           </Link>

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { LinkDot, LinkToggle } from "@/components/key/link-toggle";
-import type { Page } from "@/lib/tools";
+import { isTool, type Page } from "@/lib/tools";
 import { NAV_ITEMS } from "./nav-items";
 
 interface SidebarProps {
@@ -35,7 +35,7 @@ export function Sidebar({ page, linked, showLink, onLinkedChange }: SidebarProps
             >
               <span className="relative flex-shrink-0">
                 <Icon size={20} strokeWidth={1.9} />
-                <LinkDot visible={linked && itemPage !== "tuning"} />
+                <LinkDot visible={linked && isTool(itemPage)} />
               </span>
               <span className="hidden xl:inline">{label}</span>
             </Link>
