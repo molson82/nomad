@@ -9,7 +9,7 @@ import type { Note } from "@/lib/theory/notes";
 import type { TuningOffsets } from "@/lib/theory/tuning";
 import { useTuning } from "@/lib/tuning/use-tuning";
 import type { Tool } from "@/lib/tools";
-import { highlightFrets, lockIn, lockedVoicing, resetPath, type PathfinderState } from "./state";
+import { forgetLink, highlightFrets, lockIn, lockedVoicing, resetPath, type PathfinderState } from "./state";
 import { pathfinderStore } from "./store";
 
 export function usePathfinder(): [PathfinderState, (next: PathfinderState) => void] {
@@ -27,6 +27,10 @@ export function resetPathfinder(): void {
   const result = resetPath(pathfinderStore.get(), getKeyState());
   pathfinderStore.set(result.pathfinder);
   updateKeyState(result.keys);
+}
+
+export function forgetLockInLink(): void {
+  pathfinderStore.set(forgetLink(pathfinderStore.get()));
 }
 
 export type ChordHighlight = { rings: { string: number; fret: number }[]; name: string };

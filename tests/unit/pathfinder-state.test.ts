@@ -3,6 +3,7 @@ import {
   EMPTY_FRETS,
   EMPTY_STATE,
   canBuildPath,
+  forgetLink,
   highlightFrets,
   lockIn,
   lockedVoicing,
@@ -47,6 +48,8 @@ describe("parsePathfinder", () => {
       '{"frets":[1.5,null,null,null,null,null],"lock":null}',
       '{"frets":[null,null,null,null,null,null],"lock":{"frets":[1]}}',
       '{"frets":[null,null,null,null,null,null],"lock":{"frets":[5,7,5,5,5,5],"key":"H","tuning":[0,0,0,0,0,0],"createdLink":true}}',
+      '{"frets":[null,null,null,null,null,null],"lock":{"frets":[null,null,null,null,null,null],"key":"C","tuning":[0,0,0,0,0,0],"createdLink":true}}',
+      '{"frets":[null,null,null,null,null,null],"lock":{"frets":[5,7,5,5,5,5],"key":"C","tuning":[99,0,0,0,0,0],"createdLink":true}}',
     ]) {
       expect(parsePathfinder(raw)).toEqual(EMPTY_STATE);
     }
@@ -76,6 +79,18 @@ describe("lock in and reset", () => {
   });
 });
 
+describe("forgetLink", () => {
+  it("makes a later Reset leave the link alone", () => {
+    const state = forgetLink({ frets: AM7, lock: lock() });
+    expect(state.lock!.createdLink).toBe(false);
+    expect(resetPath(state, keys(true, "E")).keys).toEqual(keys(true, "E"));
+  });
+
+  it("does nothing with no lock", () => {
+    expect(forgetLink(EMPTY_STATE)).toBe(EMPTY_STATE);
+  });
+});
+
 describe("highlightFrets", () => {
   it("moves the short way with the key", () => {
     expect(highlightFrets(lock(), "E", std)).toEqual([9, 11, 9, 9, 9, 9]);
@@ -91,6 +106,10 @@ describe("highlightFrets", () => {
   it("keeps pitch when the tuning changes", () => {
     expect(highlightFrets(lock(), "C", [-2, 0, 0, 0, 0, 0])).toEqual([7, 7, 5, 5, 5, 5]);
     expect(highlightFrets(lock({ frets: [0, null, null, null, null, null] }), "C", [2, 0, 0, 0, 0, 0])).toEqual([10, null, null, null, null, null]);
+  });
+
+  it("doesn't move a note an octave when the whole change stays on the neck", () => {
+    expect(highlightFrets(lock({ frets: [1, 3, 3, 2, 1, 1] }), "E", [3, 3, 3, 3, 3, 3])).toEqual([2, 4, 4, 3, 2, 2]);
   });
 
   it("stays on the neck through key and tuning together", () => {

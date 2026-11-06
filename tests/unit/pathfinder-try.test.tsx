@@ -43,6 +43,14 @@ describe("TryScreen", () => {
     expect(onBack).toHaveBeenCalledTimes(2);
   });
 
+  it("spells your chord for the key", () => {
+    act(() => pathfinderStore.set({ frets: [4, 6, 4, 4, 4, 4], lock: null }));
+    const e = chordsToTry("B", 6, 8, [4, 6, 4, 4, 4, 4]).find((c) => c.name === "E")!;
+    render(<TryScreen keyName="B" chord={e} onChord={() => {}} onBack={() => {}} />);
+    expect(screen.getByRole("button", { name: "Back to G♯m7" })).toBeTruthy();
+    expect(screen.getByText("Your G♯m7")).toBeTruthy();
+  });
+
   it("saves nothing", () => {
     const set = vi.spyOn(pathfinderStore, "set");
     render(<TryScreen keyName="C" chord={g} onChord={() => {}} onBack={() => {}} />);

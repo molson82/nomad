@@ -63,7 +63,15 @@ describe("KeysScreen", () => {
     fireEvent.click(screen.getByRole("button", { name: "Triads" }));
     expect(band(container)).toBeNull();
     expect(container.querySelectorAll("[data-ring]")).toHaveLength(6);
-    expect(container.querySelectorAll("[data-tone]")).toHaveLength(6);
+    expect(container.querySelectorAll("[data-tone]")).toHaveLength(4); // Am and C share three of their notes
+  });
+
+  it("leaves no stray notes after showing triads", () => {
+    const { container } = show(AM7);
+    const pentatonic = container.querySelectorAll("[data-tone]").length;
+    fireEvent.click(screen.getByRole("button", { name: "Triads" }));
+    fireEvent.click(screen.getByRole("button", { name: "Pentatonic" }));
+    expect(container.querySelectorAll("[data-tone]")).toHaveLength(pentatonic);
   });
 
   it("goes back to edit the chord", () => {

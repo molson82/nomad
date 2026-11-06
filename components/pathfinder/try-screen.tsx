@@ -5,6 +5,7 @@ import { Neck } from "@/components/fretboard/neck";
 import { usePathfinder } from "@/lib/pathfinder/hooks";
 import { chordsToTry, keysFor, type TryChord } from "@/lib/pathfinder/paths";
 import { chordNames, noteList, voicingOf } from "@/lib/theory/chord-names";
+import { circleKeyFor } from "@/lib/theory/circle";
 import type { Note } from "@/lib/theory/notes";
 import { useTuning } from "@/lib/tuning/use-tuning";
 import { keyTitle } from "./key-card";
@@ -21,7 +22,7 @@ export function TryScreen({ keyName, chord, onChord, onBack }: TryScreenProps) {
   const [{ frets }] = usePathfinder();
   const [tuning] = useTuning();
   const voicing = voicingOf(frets, tuning)!;
-  const primary = chordNames(voicing)[0] ?? null;
+  const primary = chordNames(voicing, circleKeyFor(keyName))[0] ?? null;
   const yours = primary?.text ?? noteList(voicing, null).join(" · ");
   const degree = keysFor(voicing, primary).find((k) => k.key === keyName)?.degree ?? null;
   const chords = chordsToTry(keyName, degree, primary?.root ?? null, frets, tuning);

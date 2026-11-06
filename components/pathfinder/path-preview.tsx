@@ -33,15 +33,24 @@ export function PathPreview({ keyName, details, mode, onMode, open, rings }: Pat
   const inRegion = new Set(region?.notes.map((n) => `${n.string}:${n.fret}`));
   const markers: NeckMarker[] =
     mode === "triads"
-      ? details.triads.flatMap((t) =>
-          t.triad.tones.map((tone) => ({
-            string: tone.string,
-            fret: tone.fret,
-            label: tone.role === "R" ? "" : tone.role,
-            kind: tone.role === "R" ? ("tonic" as const) : ("tone" as const),
-            inWindow: true,
-          })),
-        )
+      ? // Two triads can share a note, and the neck draws one marker per spot.
+        [
+          ...new Map(
+            details.triads
+              .flatMap((t) => t.triad.tones)
+              .reverse()
+              .map((tone) => [
+                `${tone.string}:${tone.fret}`,
+                {
+                  string: tone.string,
+                  fret: tone.fret,
+                  label: tone.role === "R" ? "" : tone.role,
+                  kind: tone.role === "R" ? ("tonic" as const) : ("tone" as const),
+                  inWindow: true,
+                },
+              ]),
+          ).values(),
+        ]
       : neckNotes(keyName, VIEWS[mode], open).map((n) => ({
           string: n.string,
           fret: n.fret,

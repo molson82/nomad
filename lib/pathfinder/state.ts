@@ -3,7 +3,7 @@ import { transposeVoicing, voicingOf, type Frets, type Voicing } from "@/lib/the
 import { MAX_FRET } from "@/lib/theory/fretboard";
 import { NOTES, isNote, type Note } from "@/lib/theory/notes";
 import { mod } from "@/lib/theory/spelling";
-import type { TuningOffsets } from "@/lib/theory/tuning";
+import { MAX_OFFSET, MIN_OFFSET, type TuningOffsets } from "@/lib/theory/tuning";
 
 export type Lock = { frets: Frets; key: Note; tuning: number[]; createdLink: boolean };
 export type PathfinderState = { frets: Frets; lock: Lock | null };
@@ -20,11 +20,12 @@ const isFrets = (value: unknown): value is Frets =>
 const isLock = (value: Partial<Lock> | null | undefined): value is Lock =>
   !!value &&
   isFrets(value.frets) &&
+  value.frets.some((fret) => fret !== null) &&
   isNote(value.key) &&
   typeof value.createdLink === "boolean" &&
   Array.isArray(value.tuning) &&
   value.tuning.length === 6 &&
-  value.tuning.every(Number.isInteger);
+  value.tuning.every((offset) => Number.isInteger(offset) && offset >= MIN_OFFSET && offset <= MAX_OFFSET);
 
 export function parsePathfinder(raw: string | null): PathfinderState {
   if (!raw) return EMPTY_STATE;
@@ -60,6 +61,11 @@ export function resetPath(state: PathfinderState, keys: KeyState): { pathfinder:
   return { pathfinder: EMPTY_STATE, keys: unlink ? withLinked(keys, "circle", false) : keys };
 }
 
+// Unlinking by hand ends the link lock-in made: any link after that is the user's, and Reset leaves it.
+export function forgetLink(state: PathfinderState): PathfinderState {
+  return state.lock?.createdLink ? { ...state, lock: { ...state.lock, createdLink: false } } : state;
+}
+
 // The shorter way round: C → E is up 4, C → B is down 1.
 function keyInterval(from: Note, to: Note): number {
   const up = mod(NOTES.indexOf(to) - NOTES.indexOf(from), 12);
@@ -67,16 +73,18 @@ function keyInterval(from: Note, to: Note): number {
 }
 
 function onNeck(fret: number): number {
-  if (fret < 0) return fret + 12;
-  return fret > MAX_FRET ? fret - 12 : fret;
+  let onBoard = fret;
+  while (onBoard < 0) onBoard += 12;
+  while (onBoard > MAX_FRET) onBoard -= 12;
+  return onBoard;
 }
 
 export function highlightFrets(lock: Lock, toolKey: Note, offsets: TuningOffsets): Frets {
   const shift = keyInterval(lock.key, toolKey);
   return lock.frets.map((fret, s) => {
     if (fret === null) return null;
-    // Same pitch in the new tuning, then moved with the key.
-    return onNeck(onNeck(fret - (offsets[s] - lock.tuning[s])) + shift);
+    // Same pitch in the new tuning, moved with the key, and only then back onto the neck.
+    return onNeck(fret - (offsets[s] - lock.tuning[s]) + shift);
   });
 }
 

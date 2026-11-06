@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useLinked } from "@/lib/key-state/hooks";
+import { forgetLockInLink } from "@/lib/pathfinder/hooks";
 import { LAST_TOOL_KEY, isTool, pageFromPath } from "@/lib/tools";
 import { MobileHeader } from "./mobile-header";
 import { NAV_ITEMS } from "./nav-items";
@@ -14,7 +15,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const page = pageFromPath(usePathname());
   const tool = page && isTool(page) ? page : null;
   // Off a tool route ("/" redirect, 404) linking still works; it adopts the Circle's key.
-  const [linked, setLinked] = useLinked(tool ?? "circle");
+  const [linked, setKeyLinked] = useLinked(tool ?? "circle");
+  const setLinked = (next: boolean) => {
+    setKeyLinked(next);
+    if (!next) forgetLockInLink();
+  };
   // Pathfinder has no key of its own to link, so it only shows a link that's already there.
   const showLink = page === "pathfinder" ? linked : page !== "tuning";
   const title = NAV_ITEMS.find((item) => item.page === page)?.title ?? "Nomad";
