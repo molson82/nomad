@@ -26,6 +26,13 @@ describe("keysFor", () => {
     expect(keys.find((k) => k.key === "F")).toMatchObject({ outside: ["D♯"], role: "V" });
   });
 
+  it("spells the outside note for each key", () => {
+    const v = voicingOf([null, 4, 3, 4, 5, null])!; // C♯7♯9, whose ♯9 is D♯♯ on paper
+    const keys = keysFor(v, chordNames(v)[0]);
+    expect(keys.length).toBeGreaterThan(0);
+    for (const k of keys) expect(k.outside.join()).not.toMatch(/♯♯|♭♭/);
+  });
+
   it("gives a nameless chord roleless keys", () => {
     const odd = voicingOf([8, 4, null, null, null, 2])!;
     const keys = keysFor(odd, null);
@@ -48,6 +55,10 @@ describe("keyDetails", () => {
     expect(keyDetails("G", AM7).missing).toEqual(["C"]);
     expect(keyDetails("F", AM7).solo).toMatchObject({ title: "D minor pentatonic · Box 4", lowFret: 5, highFret: 8 });
     expect(keyDetails("F", AM7).missing).toEqual(["E"]);
+  });
+
+  it("spells the notes a pentatonic misses for the key", () => {
+    expect(keyDetails("E", [4, 6, 4, 4, 4, 4]).missing).toEqual(["D♯"]);
   });
 
   it("uses fret windows when the tuning isn't uniform", () => {

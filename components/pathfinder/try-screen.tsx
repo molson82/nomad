@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { ChordDiagram } from "@/components/chords/chord-diagram";
 import { Neck } from "@/components/fretboard/neck";
 import { usePathfinder } from "@/lib/pathfinder/hooks";
@@ -7,6 +8,7 @@ import { chordsToTry, keysFor, type TryChord } from "@/lib/pathfinder/paths";
 import { chordNames, noteList, voicingOf } from "@/lib/theory/chord-names";
 import { circleKeyFor } from "@/lib/theory/circle";
 import type { Note } from "@/lib/theory/notes";
+import { stringLabels } from "@/lib/theory/tuning";
 import { useTuning } from "@/lib/tuning/use-tuning";
 import { keyTitle } from "./key-card";
 
@@ -26,7 +28,12 @@ export function TryScreen({ keyName, chord, onChord, onBack }: TryScreenProps) {
   const yours = primary?.text ?? noteList(voicing, null).join(" · ");
   const degree = keysFor(voicing, primary).find((k) => k.key === keyName)?.degree ?? null;
   const chords = chordsToTry(keyName, degree, primary?.root ?? null, frets, tuning);
-  const shape = chord.shape!;
+  // Re-read, since the tuning can change under us; with no shape left there's nothing to try.
+  const shape = chords.find((c) => c.name === chord.name)?.shape ?? null;
+  useEffect(() => {
+    if (!shape) onBack();
+  }, [shape, onBack]);
+  if (!shape) return null;
   const range = shape.lowFret === shape.highFret ? `fret ${shape.lowFret}` : `frets ${shape.lowFret}–${shape.highFret}`;
   const yourNotes = frets.flatMap((fret, string) => (fret === null ? [] : [{ string, fret, dashed: true }]));
 
@@ -53,6 +60,7 @@ export function TryScreen({ keyName, chord, onChord, onBack }: TryScreenProps) {
           markers={shape.tones.map((t) => ({ string: t.string, fret: t.fret, label: "", kind: "chosen", inWindow: true }))}
           ariaLabel={`${chord.name} at ${range}`}
           rings={yourNotes}
+          strings={stringLabels(tuning)}
         />
         <div className="flex flex-wrap justify-center gap-4 text-xs font-semibold">
           <span className="flex items-center gap-1.5">
@@ -68,7 +76,7 @@ export function TryScreen({ keyName, chord, onChord, onBack }: TryScreenProps) {
 
       <section aria-label={`${chord.name} chord diagram`} className="flex justify-center rounded-[22px] border border-border bg-surface p-2.5">
         <div className="w-full max-w-[232px] lg:max-w-[300px]">
-          <ChordDiagram shape={shape} chordName={chord.name} ariaLabel={`${chord.name}, ${shape.label}, ${range}`} />
+          <ChordDiagram shape={shape} chordName={chord.name} ariaLabel={`${chord.name}, ${shape.label}, ${range}`} rings={yourNotes} />
         </div>
       </section>
 

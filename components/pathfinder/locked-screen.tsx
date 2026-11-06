@@ -7,6 +7,7 @@ import { keysFor } from "@/lib/pathfinder/paths";
 import { highlightFrets, lockedVoicing, type Lock } from "@/lib/pathfinder/state";
 import { chordNames, noteList } from "@/lib/theory/chord-names";
 import { circleKeyFor } from "@/lib/theory/circle";
+import { stringLabels } from "@/lib/theory/tuning";
 import { useTuning } from "@/lib/tuning/use-tuning";
 import { keyTitle } from "./key-card";
 
@@ -52,6 +53,7 @@ export function LockedScreen({ lock, onReset }: { lock: Lock; onReset: () => voi
         <Neck
           markers={notes.map((n) => ({ ...n, label: "", kind: "chosen", inWindow: true }))}
           ariaLabel={`${name} on the neck`}
+          strings={stringLabels(tuning)}
         />
       </section>
 

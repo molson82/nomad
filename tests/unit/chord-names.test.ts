@@ -53,6 +53,19 @@ describe("chordNames", () => {
   });
 });
 
+describe("symmetric chords", () => {
+  it("keep the same name when transposed", () => {
+    const relative = (v: ReturnType<typeof voicingOf>) => {
+      const first = chordNames(v!)[0];
+      return [first.suffix, ((first.root - first.bass) % 12 + 12) % 12];
+    };
+    const v = voicingOf([null, 13, 0, 13, 5, null], [-1, -1, -1, -1, -1, -1]);
+    for (let semitones = 0; semitones < 12; semitones++) {
+      expect(relative(transposeVoicing(v!, semitones))).toEqual(relative(v));
+    }
+  });
+});
+
 describe("voicingOf", () => {
   it("is null with no notes", () => {
     expect(voicingOf([null, null, null, null, null, null])).toBeNull();
@@ -80,6 +93,13 @@ describe("noteList", () => {
   it("spells an altered tone by its degree", () => {
     const v = voicingOf([null, 3, 2, 3, 4, null])!;
     expect(noteList(v, chordNames(v)[0])).toEqual(["C", "D♯", "E", "B♭"]);
+  });
+
+  it("writes what players read instead of a double accidental", () => {
+    const dim = voicingOf([null, 6, 4, 2, null, null])!;
+    expect(noteList(dim, chordNames(dim)[0])).toEqual(["E♭", "G♭", "A"]);
+    const aug = voicingOf([null, 4, 3, 2, 2, null])!;
+    expect(noteList(aug, chordNames(aug)[0])).toEqual(["C♯", "F", "A"]);
   });
 
   it("falls back to the app's note names with no chord name", () => {

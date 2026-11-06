@@ -1,4 +1,4 @@
-import { Neck, type NeckMarker, type Ring } from "@/components/fretboard/neck";
+import { Neck, type NeckMarker, type NeckString, type Ring } from "@/components/fretboard/neck";
 import type { KeyDetails, Region } from "@/lib/pathfinder/paths";
 import type { Note } from "@/lib/theory/notes";
 import { neckNotes, type ScaleView } from "@/lib/theory/scales";
@@ -25,10 +25,11 @@ interface PathPreviewProps {
   onMode: (mode: PreviewMode) => void;
   open: readonly number[];
   rings: Ring[];
+  strings: NeckString[];
 }
 
 // One neck, in the spot you're playing: your chord stays ringed with the solo material around it.
-export function PathPreview({ keyName, details, mode, onMode, open, rings }: PathPreviewProps) {
+export function PathPreview({ keyName, details, mode, onMode, open, rings, strings }: PathPreviewProps) {
   const region = mode === "pentatonic" ? details.solo : mode === "scale" ? details.scale : null;
   const inRegion = new Set(region?.notes.map((n) => `${n.string}:${n.fret}`));
   const markers: NeckMarker[] =
@@ -71,6 +72,7 @@ export function PathPreview({ keyName, details, mode, onMode, open, rings }: Pat
         windowHigh={region?.highFret}
         ariaLabel={`Your chord on the neck with ${caption}`}
         rings={rings}
+        strings={strings}
       />
       <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
         <div role="group" aria-label="Preview" className="mx-1 flex overflow-hidden rounded-full border-[1.5px] border-text-primary lg:mx-0">

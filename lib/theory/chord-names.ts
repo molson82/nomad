@@ -13,7 +13,8 @@ const OPEN_ABSOLUTE = [40, 45, 50, 55, 59, 64];
 
 type Quality = { suffix: string; required: number[]; optional?: number[]; letters?: Record<number, number> };
 
-// Semitones above the root. Table order breaks ties, simplest first.
+// Semitones above the root. Table order breaks ties, simplest first, then the root nearest above the bass,
+// so a symmetric chord (dim7, aug) keeps its name in every key.
 const QUALITIES: Quality[] = [
   { suffix: "5", required: [0, 7] },
   { suffix: "", required: [0, 4, 7] },
@@ -78,8 +79,9 @@ export function noteLabel(pitchClass: number, name: ChordName | null, key?: Circ
   const interval = mod(pitchClass - name.root, 12);
   const quality = QUALITIES.find((q) => q.suffix === name.suffix);
   const step = quality?.letters?.[interval] ?? LETTER_STEPS[interval];
-  const letter = LETTERS[(LETTERS.indexOf(root.letter) + step) % 7];
-  return formatNote(spellAs(letter, pitchClass));
+  const spelled = spellAs(LETTERS[(LETTERS.indexOf(root.letter) + step) % 7], pitchClass);
+  // B♭♭ is correct on paper, but players read A.
+  return formatNote(Math.abs(spelled.accidental) > 1 ? spellRoot(pitchClass, key) : spelled);
 }
 
 export function noteList(v: Voicing, name: ChordName | null, key?: CircleKey): string[] {
@@ -97,7 +99,7 @@ export function chordNames(v: Voicing, key?: CircleKey): ChordName[] {
   };
   if (v.pitchClasses.length === 1) return [named(v.pitchClasses[0], "")];
 
-  const found: { name: ChordName; rank: [number, number, number] }[] = [];
+  const found: { name: ChordName; rank: number[] }[] = [];
   for (const root of v.pitchClasses) {
     const intervals = new Set(v.pitchClasses.map((pc) => mod(pc - root, 12)));
     QUALITIES.forEach((quality, order) => {
@@ -106,11 +108,11 @@ export function chordNames(v: Voicing, key?: CircleKey): ChordName[] {
       if (!quality.required.every((i) => intervals.has(i))) return;
       if (![...intervals].every((i) => allowed.includes(i))) return;
       const omitted = optional.filter((i) => !intervals.has(i)).length;
-      found.push({ name: named(root, quality.suffix), rank: [root === v.bass ? 0 : 1, omitted, order] });
+      found.push({ name: named(root, quality.suffix), rank: [root === v.bass ? 0 : 1, omitted, order, mod(root - v.bass, 12)] });
     });
   }
   return found
-    .sort((a, b) => a.rank[0] - b.rank[0] || a.rank[1] - b.rank[1] || a.rank[2] - b.rank[2])
+    .sort((a, b) => a.rank[0] - b.rank[0] || a.rank[1] - b.rank[1] || a.rank[2] - b.rank[2] || a.rank[3] - b.rank[3])
     .slice(0, MAX_NAMES)
     .map((entry) => entry.name);
 }

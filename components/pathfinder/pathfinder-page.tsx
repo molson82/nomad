@@ -18,6 +18,13 @@ export function PathfinderPage() {
   const [trying, setTrying] = useState<{ key: Note; chord: TryChord } | null>(null);
   const [lastKey, setLastKey] = useState<Note | undefined>();
 
+  // The chord can vanish from under us (another tab, a tuning change): start over from Build, not the keys.
+  const buildable = canBuildPath(frets, tuning);
+  if (!building && !buildable) {
+    setBuilding(true);
+    setTrying(null);
+  }
+
   let screen;
   if (lock) {
     screen = (
@@ -29,7 +36,7 @@ export function PathfinderPage() {
         }}
       />
     );
-  } else if (building || !canBuildPath(frets, tuning)) {
+  } else if (building || !buildable) {
     screen = (
       <BuildScreen
         onBuild={() => {

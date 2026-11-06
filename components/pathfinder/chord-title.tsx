@@ -23,7 +23,7 @@ export function ChordTitle({ frets, offsets }: { frets: Frets; offsets: TuningOf
         ? "Power chord. Build path works from here."
         : null;
   return (
-    <div className="flex items-end justify-between gap-3">
+    <div data-testid="chord-title" className={`flex gap-3 ${names.length > 2 ? "flex-col" : "items-end justify-between"}`}>
       <div className="flex min-w-0 flex-col gap-1">
         <p data-testid="chord-name" className={`font-display font-semibold leading-none ${primary ? "text-[52px]" : "text-[26px]"}`}>
           {primary?.text ?? notes.join(" · ")}
@@ -32,9 +32,9 @@ export function ChordTitle({ frets, offsets }: { frets: Frets; offsets: TuningOf
         {message && <p className="text-[13px] text-text-secondary">{message}</p>}
       </div>
       {names.length > 1 && (
-        <div className="flex flex-shrink-0 flex-col items-end gap-1">
+        <div className={`flex flex-col gap-1 ${names.length > 2 ? "items-start" : "flex-shrink-0 items-end"}`}>
           <span className="text-xs font-semibold text-text-secondary">Also called</span>
-          <ul className="flex flex-wrap justify-end gap-1.5">
+          <ul className={`flex flex-wrap gap-1.5 ${names.length > 2 ? "" : "justify-end"}`}>
             {names.slice(1).map((name) => (
               <li key={name.text} className="rounded-full bg-accent-tint px-3 py-1 font-display text-base font-semibold text-accent-ink">
                 {name.text}

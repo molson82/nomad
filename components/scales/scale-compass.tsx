@@ -18,7 +18,7 @@ import { STRING_ORDINALS } from "@/lib/theory/fretboard";
 import { stepNote } from "@/lib/theory/notes";
 import { neckNotes, positions, scaleName, type PositionLetter, type ScaleNote } from "@/lib/theory/scales";
 import { formatNote } from "@/lib/theory/spelling";
-import { isUniform, openPitches, pitchName, tuningName } from "@/lib/theory/tuning";
+import { isUniform, openPitches, stringLabels, tuningName } from "@/lib/theory/tuning";
 import { useTuning } from "@/lib/tuning/use-tuning";
 import { TuningPill } from "@/components/tuning/tuning-pill";
 import { ScaleHeader } from "./scale-header";
@@ -122,7 +122,7 @@ export function ScaleCompass() {
             windowHigh={region.highFret}
             ariaLabel={`${name} across the neck, ${region.name} at ${range}`}
             onPickFret={(fret) => select(nearestByCentre(regions, fret).id)}
-            strings={open.map((pitch, s) => ({ name: pitchName(pitch), changed: tuning[s] !== 0 }))}
+            strings={stringLabels(tuning)}
             rings={highlight?.rings}
           />
           {highlight && <ChordLegend name={highlight.name} />}

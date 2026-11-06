@@ -52,7 +52,7 @@ export function keysFor(v: Voicing, name: ChordName | null): KeyFit[] {
     return {
       key: NOTES[k.pitchClass],
       fit: outside.length === 0 ? "full" : "near",
-      outside: outside.map((pc) => noteLabel(pc, name)),
+      outside: outside.map((pc) => noteLabel(pc, name, k)),
       degree: index < 0 ? null : index + 1,
       role: index < 0 ? null : romanFor(index + 1),
     };
@@ -147,7 +147,7 @@ export function keyDetails(key: Note, frets: Frets, offsets: TuningOffsets = STA
   const pentatonic = scaleNotes(key, PENTATONIC).map(pitchClassOf);
   return {
     solo: regionUnder(regionsFor(key, PENTATONIC, offsets, open), frets),
-    missing: v.pitchClasses.filter((pc) => !pentatonic.includes(pc)).map((pc) => noteLabel(pc, name)),
+    missing: v.pitchClasses.filter((pc) => !pentatonic.includes(pc)).map((pc) => noteLabel(pc, name, circleKeyFor(key))),
     scale: regionUnder(regionsFor(key, MAJOR_SCALE, offsets, open), frets),
     triads: triadsInside(v, name, key, frets, open),
     usedIn: usedIn(key, v),

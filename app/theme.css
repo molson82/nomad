@@ -29,9 +29,9 @@
   --color-string: #6b5a40;
   --color-fret-wire: #b89b6a;
   --color-relative: #2f5bc0;
-  /* The tuning's own colour, used on the compasses too (string names, the tuning pill). */
   /* Your locked chord: fixed, because it sits on the wood in every tool and theme. */
   --color-pathfinder: #d9468f;
+  /* The tuning's own colour, used on the compasses too (string names, the tuning pill). */
   --color-tuning: oklch(70% 0.17 295);
   --color-tuning-ink: oklch(46% 0.13 295);
   --color-tuning-tint: oklch(93% 0.05 295);

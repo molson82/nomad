@@ -6,6 +6,8 @@ import type { Lock } from "@/lib/pathfinder/state";
 import { EMPTY_STATE } from "@/lib/pathfinder/state";
 import { pathfinderStore } from "@/lib/pathfinder/store";
 import type { Note } from "@/lib/theory/notes";
+import { STANDARD_OFFSETS, TUNING_PRESETS } from "@/lib/theory/tuning";
+import { tuningStore } from "@/lib/tuning/tuning-store";
 
 vi.mock("next/navigation", () => ({ usePathname: () => "/pathfinder/" }));
 
@@ -31,6 +33,14 @@ describe("the locked screen", () => {
     expect(screen.queryByRole("button", { name: "6th string, fret 5" })).toBeNull();
     expect(screen.getByRole("link", { name: /Chord Compass/ }).getAttribute("href")).toMatch(/^\/chords\/?$/);
     expect(screen.getByRole("link", { name: /Scale Compass/ }).getAttribute("href")).toMatch(/^\/scales\/?$/);
+  });
+
+  it("names the strings of a retuned neck", () => {
+    locked();
+    act(() => tuningStore.set(TUNING_PRESETS.find((p) => p.id === "drop-d")!.offsets));
+    const { container } = render(<PathfinderPage />);
+    expect(container.querySelectorAll("[data-string-name]")).toHaveLength(6);
+    act(() => tuningStore.set(STANDARD_OFFSETS));
   });
 
   it("follows the linked key", () => {

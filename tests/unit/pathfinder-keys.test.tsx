@@ -5,6 +5,8 @@ import { DEFAULT_STATE, getKeyState, updateKeyState } from "@/lib/key-state/stor
 import { EMPTY_STATE } from "@/lib/pathfinder/state";
 import { pathfinderStore } from "@/lib/pathfinder/store";
 import type { Frets } from "@/lib/theory/chord-names";
+import { STANDARD_OFFSETS, TUNING_PRESETS } from "@/lib/theory/tuning";
+import { tuningStore } from "@/lib/tuning/tuning-store";
 
 const AM7 = [5, 7, 5, 5, 5, 5];
 const show = (frets: Frets, props: Partial<Parameters<typeof KeysScreen>[0]> = {}) => {
@@ -107,6 +109,24 @@ describe("KeysScreen", () => {
     show(AM7, { onTry });
     fireEvent.click(screen.getByRole("button", { name: /^G\s*V$/ }));
     expect(onTry).toHaveBeenCalledWith("C", expect.objectContaining({ name: "G", role: "V" }));
+  });
+
+  it("disables a chord with no playable shape", () => {
+    act(() => tuningStore.set([-5, 4, -1, -5, 2, -2]));
+    show([null, null, null, 0, 8, null], { initialKey: "D" }); // D5 in key D
+    const chips = screen.getAllByRole("button").filter((b) => /^(G|A|Bm|Em|F♯m)\s*(IV|V|vi|ii|iii)$/.test(b.textContent ?? ""));
+    expect(chips.length).toBeGreaterThan(0);
+    for (const chip of chips) expect((chip as HTMLButtonElement).disabled).toBe(true);
+    act(() => tuningStore.set(STANDARD_OFFSETS));
+  });
+
+  it("names the strings of a retuned neck", () => {
+    act(() => tuningStore.set(TUNING_PRESETS.find((p) => p.id === "drop-d")!.offsets));
+    const { container } = show(AM7);
+    const names = [...container.querySelectorAll("[data-string-name]")];
+    expect(names.map((n) => n.textContent)).toEqual(["D", "A", "D", "G", "B", "E"]);
+    expect(names[0].getAttribute("class")).toContain("fill-tuning-ink");
+    act(() => tuningStore.set(STANDARD_OFFSETS));
   });
 
   it("opens on the key it's told to", () => {

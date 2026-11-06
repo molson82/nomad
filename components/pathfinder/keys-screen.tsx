@@ -5,7 +5,7 @@ import { lockInKey, usePathfinder } from "@/lib/pathfinder/hooks";
 import { chordsToTry, keyDetails, keysFor, progressionFor, type TryChord } from "@/lib/pathfinder/paths";
 import { chordNames, noteList, voicingOf } from "@/lib/theory/chord-names";
 import type { Note } from "@/lib/theory/notes";
-import { openPitches } from "@/lib/theory/tuning";
+import { openPitches, stringLabels } from "@/lib/theory/tuning";
 import { useTuning } from "@/lib/tuning/use-tuning";
 import { KeyCard, keyTitle } from "./key-card";
 import { PathPreview, regionLine, type PreviewMode } from "./path-preview";
@@ -56,7 +56,7 @@ export function KeysScreen({ onEdit, onTry, initialKey }: KeysScreenProps) {
         </button>
       </div>
 
-      <PathPreview keyName={selected.key} details={details} mode={mode} onMode={setMode} open={openPitches(tuning)} rings={rings} />
+      <PathPreview keyName={selected.key} details={details} mode={mode} onMode={setMode} open={openPitches(tuning)} rings={rings} strings={stringLabels(tuning)} />
 
       <h2 className="mt-1.5 font-display text-lg font-semibold uppercase tracking-[0.06em]">{heading}</h2>
 

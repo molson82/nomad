@@ -26,7 +26,7 @@ import { resolveTriad, selectionFor } from "@/lib/chords/triad-store";
 import { useTriadSelection } from "@/lib/chords/use-triad-selection";
 import { nearestByCentre } from "@/lib/chords/neck-geometry";
 import { INVERSIONS, STRING_SETS, countTriads, triadsOn, type StringSet } from "@/lib/theory/triads";
-import { isUniform, openPitches, pitchName } from "@/lib/theory/tuning";
+import { isUniform, openPitches, stringLabels } from "@/lib/theory/tuning";
 import { useTuning } from "@/lib/tuning/use-tuning";
 import { TuningPill } from "@/components/tuning/tuning-pill";
 import { ProgressionStrip } from "./progression-strip";
@@ -49,7 +49,7 @@ export function ChordCompass() {
   const open = openPitches(tuning);
   // CAGED shapes only hold when every string moved by the same amount; otherwise show triads.
   const byShape = isUniform(tuning);
-  const strings = open.map((pitch, s) => ({ name: pitchName(pitch), changed: tuning[s] !== 0 }));
+  const strings = stringLabels(tuning);
   const [shapeName, setShapeName] = useSelectedShape();
   // In other tunings the CAGED templates don't land on chord tones, so they stay on standard (unshown) there.
   const shapeOpen = byShape ? open : TUNING;

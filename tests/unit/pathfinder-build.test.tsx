@@ -4,6 +4,8 @@ import { BuildScreen } from "@/components/pathfinder/build-screen";
 import { DEFAULT_STATE, getKeyState, updateKeyState } from "@/lib/key-state/store";
 import { EMPTY_STATE } from "@/lib/pathfinder/state";
 import { pathfinderStore } from "@/lib/pathfinder/store";
+import { STANDARD_OFFSETS, TUNING_PRESETS } from "@/lib/theory/tuning";
+import { tuningStore } from "@/lib/tuning/tuning-store";
 
 const cell = (string: string, fret: number) => screen.getByRole("button", { name: `${string} string, fret ${fret}` });
 const title = () => screen.getByTestId("chord-name");
@@ -88,6 +90,21 @@ describe("BuildScreen", () => {
     buildAm7();
     expect(title().textContent).toBe("Am7");
     expect(getKeyState()).toBe(before);
+  });
+
+  it("names the strings on the overview of a retuned neck", () => {
+    act(() => tuningStore.set(TUNING_PRESETS.find((p) => p.id === "drop-d")!.offsets));
+    const { container } = render(<BuildScreen onBuild={() => {}} />);
+    expect(container.querySelectorAll("[data-string-name]")).toHaveLength(6);
+    act(() => tuningStore.set(STANDARD_OFFSETS));
+  });
+
+  it("stacks the other names under the chord when there are several", () => {
+    act(() => pathfinderStore.set({ frets: [null, 3, 4, 2, 4, null], lock: null })); // Cdim7
+    render(<BuildScreen onBuild={() => {}} />);
+    expect(screen.getByTestId("chord-title").className).toContain("flex-col");
+    act(() => pathfinderStore.set({ frets: [5, 7, 5, 5, 5, 5], lock: null }));
+    expect(screen.getByTestId("chord-title").className).not.toContain("flex-col");
   });
 
   it("restores a chord from the store", () => {

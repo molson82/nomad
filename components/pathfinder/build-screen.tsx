@@ -5,6 +5,7 @@ import { Neck } from "@/components/fretboard/neck";
 import { usePathfinder } from "@/lib/pathfinder/hooks";
 import { EMPTY_FRETS, canBuildPath, tapFret } from "@/lib/pathfinder/state";
 import { MAX_FRET } from "@/lib/theory/fretboard";
+import { stringLabels } from "@/lib/theory/tuning";
 import { useTuning } from "@/lib/tuning/use-tuning";
 import { ChordTitle } from "./chord-title";
 import { TAP_NECK, TapNeck, tapFretX } from "./tap-neck";
@@ -51,6 +52,7 @@ export function BuildScreen({ onBuild }: { onBuild: () => void }) {
           windowHigh={inView.high}
           ariaLabel="Whole neck, showing the part in view below"
           onPickFret={scrollToFret}
+          strings={stringLabels(tuning)}
         />
       </section>
       <section aria-label="Place your notes" className="-mx-4 flex flex-col gap-1.5 border-y border-border bg-surface py-2 md:mx-0 md:rounded-[20px] md:border lg:p-3">
