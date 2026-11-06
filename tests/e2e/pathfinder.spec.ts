@@ -269,13 +269,15 @@ test("a real touch swipe moves the neck without placing a note", async ({ browse
   const scroller = page.locator('section[aria-label="Place your notes"] .overflow-x-auto');
   const box = (await scroller.boundingBox())!;
   const cdp = await context.newCDPSession(page);
-  await cdp.send("Input.synthesizeScrollGesture", {
-    x: box.x + box.width * 0.8,
-    y: box.y + box.height / 2,
-    xDistance: -300,
-    yDistance: 0,
-    gestureSourceType: "touch",
-  });
+  // Real touch events: Chromium's synthesizeScrollGesture does nothing on CI's Linux runners.
+  const x = box.x + box.width * 0.8;
+  const y = box.y + box.height / 2;
+  await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y }] });
+  for (let i = 1; i <= 12; i++) {
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x: x - i * 25, y }] });
+    await page.waitForTimeout(16);
+  }
+  await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
   await expect.poll(() => scroller.evaluate((el) => el.scrollLeft)).toBeGreaterThan(100);
   await expect(page.getByRole("button", { pressed: true })).toHaveCount(0);
   await expect(page.getByText("Find your sound")).toBeVisible();

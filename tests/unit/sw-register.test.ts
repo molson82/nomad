@@ -45,6 +45,21 @@ describe("registerServiceWorker", () => {
     expect(reload).not.toHaveBeenCalled();
   });
 
+  it("first install: no update pill even if the worker claims the page before its installed event is handled", async () => {
+    const { registration, container } = setup({ controller: false });
+    const onUpdateReady = vi.fn();
+    await registerServiceWorker(onUpdateReady, vi.fn());
+
+    const worker = newWorker();
+    registration.installing = worker;
+    registration.dispatchEvent(new Event("updatefound"));
+    container.controller = {}; // clients.claim() got there first, as a slow browser can
+    worker.state = "installed";
+    worker.dispatchEvent(new Event("statechange"));
+
+    expect(onUpdateReady).not.toHaveBeenCalled();
+  });
+
   it("a new version is offered, and only applied when the user taps", async () => {
     const { registration, container } = setup({ controller: true });
     const onUpdateReady = vi.fn();

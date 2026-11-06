@@ -28,8 +28,10 @@ export async function registerServiceWorker(
     registration.addEventListener("updatefound", () => {
       const worker = registration.installing;
       if (!worker) return;
+      // Asked now, not when installed: on a first install the worker can claim the page before that event is handled.
+      const replacing = !!container.controller;
       worker.addEventListener("statechange", () => {
-        if (worker.state === "installed" && container.controller) offer(worker);
+        if (worker.state === "installed" && replacing) offer(worker);
       });
     });
   } catch (error) {
