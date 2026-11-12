@@ -1,6 +1,6 @@
 # Review hardening: findings and fix plan
 
-Date: 2026-11-12 · Reviewed at `b7ad0e6` · Status: **awaiting confirmation**
+Date: 2026-11-12 · Reviewed at `b7ad0e6` · Status: **implemented** (all decisions approved; the CI audit step from S3 was left out because `postcss` under `next` still fails it)
 
 A full read of `lib/`, `components/`, `app/`, `public/sw.js`, `scripts/` and CI, plus a throwaway
 numeric sweep of the theory code (every root × quality × view × uniform tuning; triads in every preset and
@@ -50,7 +50,7 @@ inversion from the lowest *sounding* tone. `TriadControls`' "R in the bass" text
 
 **T3 · Medium · Pathfinder's Roman numeral ignores the chord's quality.**
 `lib/pathfinder/paths.ts:51-57` takes the numeral from the root's scale degree alone. Cm(maj7) is shown
-as "**I** in C major"; Cm7 (no 5th) as "**vii°**" in D♭; Csus4 as "ii" in B♭.
+as "**I** in C major"; Cm7 without its 5th (x3x34x) as "**vii°**" in D♭; Csus4 as "ii" in B♭.
 Fix: keep `degree` (the pairings still use it) but only set `role` when the chord's third and fifth match
 the diatonic triad on that degree; otherwise `role: null`, which every caller already handles.
 

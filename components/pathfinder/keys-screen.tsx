@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { lockInKey, usePathfinder } from "@/lib/pathfinder/hooks";
 import { chordsToTry, keyDetails, keysFor, progressionFor, type TryChord } from "@/lib/pathfinder/paths";
 import { chordNames, noteList, voicingOf } from "@/lib/theory/chord-names";
@@ -26,7 +26,14 @@ export function KeysScreen({ onEdit, onTry, initialKey }: KeysScreenProps) {
   const fits = keysFor(voicing, primary);
   const [picked, setPicked] = useState<Note>(initialKey ?? fits[0].key);
   const selected = fits.find((k) => k.key === picked) ?? fits[0];
-  const details = keyDetails(selected.key, frets, tuning);
+  // keyDetails walks every position and triad, so work it out once per key, not on each mode or key tap.
+  const allDetails = useMemo(
+    () => new Map(fits.map((fit) => [fit.key, keyDetails(fit.key, frets, tuning)])),
+    // `fits` follows from frets and tuning alone.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [frets, tuning],
+  );
+  const details = allDetails.get(selected.key)!;
   const rings = frets.flatMap((fret, string) => (fret === null ? [] : [{ string, fret }]));
   const chordLabel = primary?.text ?? noteList(voicing, null).join(" · ");
   const heading =
@@ -65,7 +72,7 @@ export function KeysScreen({ onEdit, onTry, initialKey }: KeysScreenProps) {
           <KeyCard
             key={fit.key}
             fit={fit}
-            details={keyDetails(fit.key, frets, tuning)}
+            details={allDetails.get(fit.key)!}
             selected={fit.key === selected.key}
             onSelect={() => setPicked(fit.key)}
             rowSpan={fits.length}
