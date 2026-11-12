@@ -1,5 +1,5 @@
 import { majorScale, type CircleKey } from "./circle";
-import { formatNote, mod, type SpelledNote } from "./spelling";
+import { formatExact, mod, type SpelledNote } from "./spelling";
 
 export type ChordQuality = "maj" | "min" | "dim";
 
@@ -36,11 +36,11 @@ export function diatonicChords(key: CircleKey): Chord[] {
 }
 
 export function chordName(chord: Chord): string {
-  return formatNote(chord.root) + SUFFIX[chord.quality];
+  return formatExact(chord.root) + SUFFIX[chord.quality];
 }
 
 export function chordLongName(chord: Chord): string {
-  return `${formatNote(chord.root)} ${QUALITY_NAME[chord.quality]}`;
+  return `${formatExact(chord.root)} ${QUALITY_NAME[chord.quality]}`;
 }
 
 export function romanFor(degree: number): string {

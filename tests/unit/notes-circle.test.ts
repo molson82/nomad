@@ -52,6 +52,12 @@ describe("keyChordsNote", () => {
       "The pattern never changes: major, minor, minor, major, major, minor, diminished. In D♭: I D♭ · ii E♭m · iii Fm · IV G♭ · V A♭ · vi B♭m · vii° C°.",
     );
   });
+
+  it("writes F♯'s 7th as E♯", () => {
+    const [scale, chords] = text(keyChordsNote("F#"));
+    expect(scale).toContain("F♯ G♯ A♯ B C♯ D♯ E♯");
+    expect(chords).toContain("vii° E♯°");
+  });
 });
 
 describe("progressionNote", () => {

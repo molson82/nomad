@@ -1,6 +1,6 @@
 import { majorScale, type CircleKey } from "./circle";
 import { NOTES } from "./notes";
-import { LETTERS, formatNote, mod, pitchClassOf, spellAs, type Letter, type SpelledNote } from "./spelling";
+import { LETTERS, formatExact, formatNote, mod, pitchClassOf, spellAs, type Letter, type SpelledNote } from "./spelling";
 import { STANDARD_OFFSETS, type TuningOffsets } from "./tuning";
 
 export type Frets = readonly (number | null)[]; // six entries, low → high; null is silent
@@ -17,6 +17,8 @@ type Quality = { suffix: string; required: number[]; optional?: number[]; letter
 // so a symmetric chord (dim7, aug) keeps its name in every key.
 const QUALITIES: Quality[] = [
   { suffix: "5", required: [0, 7] },
+  { suffix: "(no5)", required: [0, 4] },
+  { suffix: "m(no5)", required: [0, 3] },
   { suffix: "", required: [0, 4, 7] },
   { suffix: "m", required: [0, 3, 7] },
   { suffix: "dim", required: [0, 3, 6] },
@@ -46,7 +48,19 @@ const QUALITIES: Quality[] = [
   { suffix: "11", required: [0, 10, 5], optional: [7, 2] },
   { suffix: "m11", required: [0, 3, 10, 5], optional: [7, 2] },
   { suffix: "13", required: [0, 4, 10, 9], optional: [7, 2] },
+  { suffix: "maj7♯11", required: [0, 4, 11, 6], optional: [7], letters: { 6: 3 } },
+  { suffix: "add11", required: [0, 4, 7, 5] },
+  { suffix: "m6/9", required: [0, 3, 9, 2], optional: [7] },
+  { suffix: "maj13", required: [0, 4, 11, 9], optional: [7, 2] },
 ];
+
+// With the root not in the bass, a 7th chord reads before a 6th (Am7/E, then C6/E).
+const AFTER_SEVENTHS = QUALITIES.findIndex((q) => q.suffix === "m7") + 0.5;
+const slashOrder = (suffix: string, order: number) => (suffix === "6" || suffix === "m6" ? AFTER_SEVENTHS : order);
+
+// With no key to follow, a chord with a minor third takes C♯ E♭ F♯ G♯ B♭ (G♯m), any other D♭ E♭ F♯ A♭ B♭ (D♭).
+const MINOR_ROOTS = "CCDEEFFGGABB";
+const OTHER_ROOTS = "CDDEEFFGAABB";
 
 // Semitones above the root → letters above the root. Written dim7 sevenths read as the 6th, as players name them.
 const LETTER_STEPS = [0, 1, 1, 2, 2, 3, 4, 4, 4, 5, 6, 6];
@@ -73,31 +87,60 @@ export function spellRoot(pitchClass: number, key?: CircleKey): SpelledNote {
   return inKey || spellAs(NOTES[pitchClass][0] as Letter, pitchClass);
 }
 
-export function noteLabel(pitchClass: number, name: ChordName | null, key?: CircleKey): string {
-  if (!name) return formatNote(spellRoot(pitchClass, key));
-  const root = spellRoot(name.root, key);
-  const interval = mod(pitchClass - name.root, 12);
-  const quality = QUALITIES.find((q) => q.suffix === name.suffix);
+function qualityOf(suffix: string): Quality | undefined {
+  return QUALITIES.find((q) => q.suffix === suffix);
+}
+
+function toneOf(root: SpelledNote, pitchClass: number, quality?: Quality): SpelledNote {
+  const interval = mod(pitchClass - pitchClassOf(root), 12);
   const step = quality?.letters?.[interval] ?? LETTER_STEPS[interval];
-  const spelled = spellAs(LETTERS[(LETTERS.indexOf(root.letter) + step) % 7], pitchClass);
+  return spellAs(LETTERS[(LETTERS.indexOf(root.letter) + step) % 7], pitchClass);
+}
+
+// The key's spelling of a chord root, but not E♯ (or B♯, C♭, F♭) where the chord would need a double
+// accidental: F major played in F♯ reads F, not E♯ with G♯♯.
+function keyRoot(root: number, suffix: string, key?: CircleKey): SpelledNote | undefined {
+  const inKey = key && majorScale(key).find((note) => pitchClassOf(note) === root);
+  if (!inKey || formatNote(inKey) === formatExact(inKey)) return inKey;
+  const quality = qualityOf(suffix);
+  const doubled = quality?.required.some((i) => Math.abs(toneOf(inKey, root + i, quality).accidental) > 1);
+  return doubled ? undefined : inKey;
+}
+
+function chordRoot(root: number, suffix: string, key?: CircleKey): SpelledNote {
+  const quality = qualityOf(suffix);
+  const minor = quality?.required.includes(3) && !quality.letters?.[3];
+  return keyRoot(root, suffix, key) ?? spellAs((minor ? MINOR_ROOTS : OTHER_ROOTS)[root] as Letter, root);
+}
+
+// Neck labels keep the names players read (F, not E♯); exact prints the true letter for lists and names.
+export function noteLabel(pitchClass: number, name: ChordName | null, key?: CircleKey, exact = false): string {
+  const format = exact ? formatExact : formatNote;
+  if (!name) return format(spellRoot(pitchClass, key));
+  // The name's own root letter, so G♯m lists G♯ B D♯.
+  const root = keyRoot(name.root, name.suffix, key) ?? spellAs(name.text[0] as Letter, name.root);
+  const spelled = toneOf(root, pitchClass, qualityOf(name.suffix));
   // B♭♭ is correct on paper, but players read A.
-  return formatNote(Math.abs(spelled.accidental) > 1 ? spellRoot(pitchClass, key) : spelled);
+  return format(Math.abs(spelled.accidental) > 1 ? spellRoot(pitchClass, key) : spelled);
 }
 
 export function noteList(v: Voicing, name: ChordName | null, key?: CircleKey): string[] {
   const from = name?.root ?? 0;
   return [...v.pitchClasses]
     .sort((a, b) => mod(a - from, 12) - mod(b - from, 12))
-    .map((pc) => noteLabel(pc, name, key));
+    .map((pc) => noteLabel(pc, name, key, true));
 }
 
 export function chordNames(v: Voicing, key?: CircleKey): ChordName[] {
   const named = (root: number, suffix: string): ChordName => {
-    const base: ChordName = { text: "", root, suffix, bass: v.bass };
-    const slash = root === v.bass ? "" : `/${noteLabel(v.bass, base, key)}`;
-    return { ...base, text: `${formatNote(spellRoot(root, key))}${suffix}${slash}` };
+    const base: ChordName = { text: formatExact(chordRoot(root, suffix, key)), root, suffix, bass: v.bass };
+    const slash = root === v.bass ? "" : `/${noteLabel(v.bass, base, key, true)}`;
+    return { ...base, text: `${base.text}${suffix}${slash}` };
   };
-  if (v.pitchClasses.length === 1) return [named(v.pitchClasses[0], "")];
+  if (v.pitchClasses.length === 1) {
+    const pc = v.pitchClasses[0];
+    return [{ text: formatNote(spellRoot(pc, key)), root: pc, suffix: "", bass: v.bass }];
+  }
 
   const found: { name: ChordName; rank: number[] }[] = [];
   for (const root of v.pitchClasses) {
@@ -108,7 +151,7 @@ export function chordNames(v: Voicing, key?: CircleKey): ChordName[] {
       if (!quality.required.every((i) => intervals.has(i))) return;
       if (![...intervals].every((i) => allowed.includes(i))) return;
       const omitted = optional.filter((i) => !intervals.has(i)).length;
-      found.push({ name: named(root, quality.suffix), rank: [root === v.bass ? 0 : 1, omitted, order, mod(root - v.bass, 12)] });
+      found.push({ name: named(root, quality.suffix), rank: [root === v.bass ? 0 : 1, omitted, root === v.bass ? order : slashOrder(quality.suffix, order), mod(root - v.bass, 12)] });
     });
   }
   return found

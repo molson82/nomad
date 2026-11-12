@@ -2,24 +2,24 @@ import type { CagedShape } from "@/lib/theory/caged";
 import { circleKeyFor } from "@/lib/theory/circle";
 import type { Quality } from "@/lib/theory/fretboard";
 import type { Note } from "@/lib/theory/notes";
-import { formatNote, type SpelledNote } from "@/lib/theory/spelling";
+import { formatExact, type SpelledNote } from "@/lib/theory/spelling";
 import { signatureText } from "./key-facts";
 import type { Paragraph, TheoryNote } from "./types";
 
 export function chordBuildNote(chord: readonly SpelledNote[], quality: Quality): TheoryNote {
-  const notes = { strong: chord.map(formatNote).join(" · ") };
+  const notes = { strong: chord.map(formatExact).join(" · ") };
   const first: Paragraph =
     quality === "major"
       ? ["A major chord is the 1st, 3rd and 5th notes of its major scale: ", notes, ". The 3rd is four frets above the root; the 5th is seven."]
       : ["A minor chord lowers the 3rd by one fret: ", notes, ". That one note is the whole difference between major and minor."];
   return {
-    title: `How ${formatNote(chord[0])} ${quality} is built`,
+    title: `How ${formatExact(chord[0])} ${quality} is built`,
     paragraphs: [first, ["Everything you see on the neck is one of those three notes — the black dots are the root."]],
   };
 }
 
 export function cagedNote(chord: readonly SpelledNote[], quality: Quality, shapes: readonly CagedShape[]): TheoryNote {
-  const root = formatNote(chord[0]);
+  const root = formatExact(chord[0]);
   const range = (s: CagedShape) => `${s.lowFret}–${s.highFret}`;
   const [a, b, c, d, e] = shapes;
   return {
@@ -42,8 +42,8 @@ export function cagedNote(chord: readonly SpelledNote[], quality: Quality, shape
 
 export function relativeMinorNote(root: Note): TheoryNote {
   const key = circleKeyFor(root);
-  const tonic = formatNote(key.tonic);
-  const sixth = formatNote(key.relativeMinor);
+  const tonic = formatExact(key.tonic);
+  const sixth = formatExact(key.relativeMinor);
   return {
     title: `${tonic} major and ${sixth} minor`,
     paragraphs: [

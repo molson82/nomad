@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatNote, mod, pitchClassOf, spellAs } from "@/lib/theory/spelling";
+import { formatExact, formatNote, mod, pitchClassOf, spellAs } from "@/lib/theory/spelling";
 
 describe("spelling", () => {
   it("mod is always non-negative", () => {
@@ -34,5 +34,13 @@ describe("spelling", () => {
     expect(formatNote({ letter: "B", accidental: 1 })).toBe("C");
     expect(formatNote({ letter: "F", accidental: -1 })).toBe("E");
     expect(formatNote({ letter: "C", accidental: -1 })).toBe("B");
+  });
+
+  it("prints the true letter when asked", () => {
+    expect(formatExact({ letter: "E", accidental: 1 })).toBe("E♯");
+    expect(formatExact({ letter: "B", accidental: 1 })).toBe("B♯");
+    expect(formatExact({ letter: "F", accidental: -1 })).toBe("F♭");
+    expect(formatExact({ letter: "C", accidental: -1 })).toBe("C♭");
+    expect(formatExact({ letter: "F", accidental: 1 })).toBe("F♯");
   });
 });
