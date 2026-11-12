@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { cagedShapes } from "@/lib/theory/caged";
+import { chordTones } from "@/lib/theory/fretboard";
 import { positions, neckNotes } from "@/lib/theory/scales";
-import { TUNING_PRESETS, openPitches } from "@/lib/theory/tuning";
+import { TUNING_PRESETS, isUniform, openPitches } from "@/lib/theory/tuning";
 
 const open = (id: string) => openPitches(TUNING_PRESETS.find((p) => p.id === id)!.offsets);
 const frets = (shape: { tones: { string: number; fret: number }[] }) =>
@@ -25,5 +26,18 @@ describe("theory in other tunings", () => {
 
   it("leaves standard tuning exactly as before", () => {
     expect(cagedShapes("G", "major", open("standard"))).toEqual(cagedShapes("G", "major"));
+  });
+
+  it.each(TUNING_PRESETS.map((p) => [p.name, p.offsets] as const))("needs only the pitch class of each open string: %s", (_, offsets) => {
+    const absolute = openPitches(offsets);
+    const classes = absolute.map((p) => p % 12);
+    const major = { tonality: "major", type: "scale" } as const;
+    if (isUniform(offsets)) {
+      // CAGED shapes and positions are only used in uniform tunings.
+      expect(cagedShapes("A", "minor", absolute)).toEqual(cagedShapes("A", "minor", classes));
+      expect(positions("E", major, absolute)).toEqual(positions("E", major, classes));
+    }
+    expect(neckNotes("Bb", major, absolute)).toEqual(neckNotes("Bb", major, classes));
+    expect(chordTones("D", "major", absolute)).toEqual(chordTones("D", "major", classes));
   });
 });

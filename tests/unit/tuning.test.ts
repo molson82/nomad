@@ -4,11 +4,12 @@ import { TUNING_PRESETS, isStandard, isUniform, openPitches, parseTuning, preset
 const preset = (id: string) => TUNING_PRESETS.find((p) => p.id === id)!.offsets;
 
 describe("tuning", () => {
-  it("spells every preset's open strings low → high", () => {
+  it("gives every preset's open strings as absolute pitches, low → high", () => {
     expect(TUNING_PRESETS.every((p) => tuningName(p.offsets) === p.name)).toBe(true);
     expect(TUNING_PRESETS.map((p) => `${p.name}: ${openPitches(p.offsets).join(",")}`)).toEqual([
-      "Standard: 4,9,2,7,11,4", "Half step down: 3,8,1,6,10,3", "Whole step down: 2,7,0,5,9,2", "Drop D: 2,9,2,7,11,4",
-      "DADGAD: 2,9,2,7,9,2", "Open G: 2,7,2,7,11,2", "Open D: 2,9,2,6,9,2", "Open C: 0,7,0,7,0,4", "FACGCE: 5,9,0,7,0,4",
+      "Standard: 40,45,50,55,59,64", "Half step down: 39,44,49,54,58,63", "Whole step down: 38,43,48,53,57,62",
+      "Drop D: 38,45,50,55,59,64", "DADGAD: 38,45,50,55,57,62", "Open G: 38,43,50,55,59,62", "Open D: 38,45,50,54,57,62",
+      "Open C: 36,43,48,55,60,64", "FACGCE: 41,45,48,55,60,64",
     ]);
   });
 

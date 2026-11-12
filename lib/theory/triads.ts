@@ -18,13 +18,15 @@ export type Triad = {
 
 const MAX_SPAN = 4;
 
-// The bass is the chord tone on the lowest string; the other two may sit above it in either order.
+// Every order of the three chord tones across the three strings. `open` must be absolute pitches
+// (`openPitches`), because the inversion is named by the lowest *sounding* tone, which in a tuning
+// whose strings cross need not be on the lowest string.
 export function triadsOn(chord: readonly SpelledNote[], quality: Quality, open: readonly number[], set: StringSet): Triad[] {
   const pitches = chord.map(pitchClassOf);
   const fretsFor = (string: number, pitch: number) =>
     Array.from({ length: MAX_FRET + 1 }, (_, fret) => fret).filter((fret) => (open[string] + fret) % 12 === pitch);
   const triads: Triad[] = [];
-  INVERSIONS.forEach((inversion, bass) => {
+  INVERSIONS.forEach((_, bass) => {
     const upper = [0, 1, 2].filter((i) => i !== bass);
     for (const [middle, top] of [upper, [...upper].reverse()]) {
       for (const f0 of fretsFor(set, pitches[bass])) {
@@ -35,6 +37,9 @@ export function triadsOn(chord: readonly SpelledNote[], quality: Quality, open: 
             const highFret = Math.max(...frets);
             if (highFret - lowFret > MAX_SPAN) continue;
             const tones = frets.map((fret, i) => toneAt(chord, set + i, fret, quality, open));
+            const sounding = frets.map((fret, i) => open[set + i] + fret);
+            const lowest = [bass, middle, top][sounding.indexOf(Math.min(...sounding))];
+            const inversion = INVERSIONS[lowest];
             triads.push({ set, inversion, frets, tones, lowFret, highFret });
           }
         }
