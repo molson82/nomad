@@ -81,11 +81,15 @@ function onNeck(fret: number): number {
 
 export function highlightFrets(lock: Lock, toolKey: Note, offsets: TuningOffsets): Frets {
   const shift = keyInterval(lock.key, toolKey);
-  return lock.frets.map((fret, s) => {
-    if (fret === null) return null;
-    // Same pitch in the new tuning, moved with the key, and only then back onto the neck.
-    return onNeck(fret - (offsets[s] - lock.tuning[s]) + shift);
-  });
+  // Same pitch in the new tuning, moved with the key, and only then back onto the neck.
+  const moved = lock.frets.map((fret, s) => (fret === null ? null : fret - (offsets[s] - lock.tuning[s]) + shift));
+  // Move the chord as one unit: the octave nearest 0 that fits every string, else wrap each string.
+  for (const octave of [0, 12, -12, 24, -24]) {
+    if (moved.every((fret) => fret === null || (fret + octave >= 0 && fret + octave <= MAX_FRET))) {
+      return moved.map((fret) => (fret === null ? null : fret + octave));
+    }
+  }
+  return moved.map((fret) => (fret === null ? null : onNeck(fret)));
 }
 
 export function lockedVoicing(lock: Lock, currentKey: Note): Voicing {
