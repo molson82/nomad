@@ -58,7 +58,7 @@ describe("Decoder layout and progressions", () => {
   it("ships the five agreed presets", () => {
     expect(COMMON_PROGRESSIONS.map((p) => [p.id, p.name, progressionLabel(p.degrees)])).toEqual([
       ["pop", "Pop", "I–V–vi–IV"],
-      ["ii-v-i", "Jazz turnaround", "ii–V–I"],
+      ["ii-v-i", "Jazz cadence", "ii–V–I"],
       ["i-iv-v", "Three-chord", "I–IV–V"],
       ["vi-iv-i-v", "Sensitive", "vi–IV–I–V"],
       ["fifties", "50s", "I–vi–IV–V"],

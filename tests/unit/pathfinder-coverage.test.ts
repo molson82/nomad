@@ -126,7 +126,7 @@ describe("chordsToTry", () => {
 describe("progressionFor", () => {
   it.each([
     [1, "Pop"],
-    [2, "Jazz turnaround"],
+    [2, "Jazz cadence"],
     [4, "Pop"],
     [5, "Pop"],
     [6, "Sensitive"],

@@ -58,7 +58,7 @@ export type ProgressionPreset = { id: string; name: string; degrees: readonly nu
 
 export const COMMON_PROGRESSIONS: readonly ProgressionPreset[] = [
   { id: "pop", name: "Pop", degrees: [1, 5, 6, 4] },
-  { id: "ii-v-i", name: "Jazz turnaround", degrees: [2, 5, 1] },
+  { id: "ii-v-i", name: "Jazz cadence", degrees: [2, 5, 1] },
   { id: "i-iv-v", name: "Three-chord", degrees: [1, 4, 5] },
   { id: "vi-iv-i-v", name: "Sensitive", degrees: [6, 4, 1, 5] },
   { id: "fifties", name: "50s", degrees: [1, 6, 4, 5] },

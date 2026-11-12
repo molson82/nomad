@@ -13,7 +13,7 @@ describe("fifthsNote", () => {
     expect(note.title).toBe("Why the circle moves in fifths");
     expect(text(note)).toEqual([
       "Each step clockwise is a fifth up: count five letters from G and you land on D (G A B C D).",
-      "Every step clockwise adds one sharp, and every step counter-clockwise adds one flat. G major has 1 sharp: F♯.",
+      "Every step clockwise adds a sharp or drops a flat; every step counter-clockwise does the reverse. G major has 1 sharp: F♯.",
       "So C sits to its left and D to its right — neighbours share all but one note, which is why they sound so close.",
     ]);
     expect(strong(note, 1)).toEqual(["G major", "1 sharp: F♯"]);
@@ -22,7 +22,7 @@ describe("fifthsNote", () => {
   it("spells a flat key from its own scale", () => {
     expect(text(fifthsNote("C#"))).toEqual([
       "Each step clockwise is a fifth up: count five letters from D♭ and you land on A♭ (D E F G A).",
-      "Every step clockwise adds one sharp, and every step counter-clockwise adds one flat. D♭ major has 5 flats: B♭ E♭ A♭ D♭ G♭.",
+      "Every step clockwise adds a sharp or drops a flat; every step counter-clockwise does the reverse. D♭ major has 5 flats: B♭ E♭ A♭ D♭ G♭.",
       "So G♭ sits to its left and A♭ to its right — neighbours share all but one note, which is why they sound so close.",
     ]);
   });
@@ -67,7 +67,7 @@ describe("progressionNote", () => {
   });
 
   it.each([
-    ["ii-v-i", "Jazz turnaround · ii–V–I", "Am – D – G. Each chord's root is a fifth above the next, the strongest move in the key: ii sets up V, and V resolves to I."],
+    ["ii-v-i", "Jazz cadence · ii–V–I", "Am – D – G. Each chord's root is a fifth above the next, the strongest move in the key: ii sets up V, and V resolves to I."],
     ["i-iv-v", "Three-chord · I–IV–V", "G – C – D. The three major chords of the key; between them they contain every note of G major, which is why so many songs need nothing else."],
     ["vi-iv-i-v", "Sensitive · vi–IV–I–V", "Em – C – G – D. The Pop chords started from the relative minor, so the same loop feels darker and ends hanging on V."],
     ["fifties", "50s · I–vi–IV–V", "G – Em – C – D. Home, its relative minor, then IV and V climbing back to home — the doo-wop loop."],

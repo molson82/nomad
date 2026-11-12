@@ -16,7 +16,7 @@ export function fifthsNote(root: Note): TheoryNote {
     title: "Why the circle moves in fifths",
     paragraphs: [
       ["Each step clockwise is a fifth up: count five letters from ", { strong: tonic }, " and you land on ", { strong: fifth }, ` (${letters}).`],
-      ["Every step clockwise adds one sharp, and every step counter-clockwise adds one flat. ", { strong: `${tonic} major` }, " has ", { strong: signatureText(key) }, "."],
+      ["Every step clockwise adds a sharp or drops a flat; every step counter-clockwise does the reverse. ", { strong: `${tonic} major` }, " has ", { strong: signatureText(key) }, "."],
       ["So ", { strong: formatNote(scale[3]) }, " sits to its left and ", { strong: fifth }, " to its right — neighbours share all but one note, which is why they sound so close."],
     ],
   };

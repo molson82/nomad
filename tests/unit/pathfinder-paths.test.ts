@@ -115,7 +115,7 @@ describe("chordsToTry", () => {
 describe("progressionFor", () => {
   it("finds one containing the degree, starting on it when one does", () => {
     expect(progressionFor("C", 6)).toEqual({ name: "Sensitive", chords: ["Am", "F", "C", "G"] });
-    expect(progressionFor("C", 2)).toEqual({ name: "Jazz turnaround", chords: ["Dm", "G", "C"] });
+    expect(progressionFor("C", 2)).toEqual({ name: "Jazz cadence", chords: ["Dm", "G", "C"] });
     expect(progressionFor("F", 3)).toBeNull();
     expect(progressionFor("C", null)).toBeNull();
   });
