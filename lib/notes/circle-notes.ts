@@ -1,7 +1,7 @@
 import { COMMON_PROGRESSIONS, chordName, diatonicChords, progressionLabel } from "@/lib/theory/chords";
 import { circleKeyFor, majorScale } from "@/lib/theory/circle";
 import type { Note } from "@/lib/theory/notes";
-import { formatNote } from "@/lib/theory/spelling";
+import { formatExact } from "@/lib/theory/spelling";
 import { signatureText } from "./key-facts";
 import type { Paragraph, Segment, TheoryNote } from "./types";
 
@@ -9,27 +9,27 @@ import type { Paragraph, Segment, TheoryNote } from "./types";
 export function fifthsNote(root: Note): TheoryNote {
   const key = circleKeyFor(root);
   const scale = majorScale(key);
-  const tonic = formatNote(key.tonic);
-  const fifth = formatNote(scale[4]);
+  const tonic = formatExact(key.tonic);
+  const fifth = formatExact(scale[4]);
   const letters = scale.slice(0, 5).map((n) => n.letter).join(" ");
   return {
     title: "Why the circle moves in fifths",
     paragraphs: [
       ["Each step clockwise is a fifth up: count five letters from ", { strong: tonic }, " and you land on ", { strong: fifth }, ` (${letters}).`],
-      ["Every step clockwise adds one sharp, and every step counter-clockwise adds one flat. ", { strong: `${tonic} major` }, " has ", { strong: signatureText(key) }, "."],
-      ["So ", { strong: formatNote(scale[3]) }, " sits to its left and ", { strong: fifth }, " to its right — neighbours share all but one note, which is why they sound so close."],
+      ["Every step clockwise adds a sharp or drops a flat; every step counter-clockwise does the reverse. ", { strong: `${tonic} major` }, " has ", { strong: signatureText(key) }, "."],
+      ["So ", { strong: formatExact(scale[3]) }, " sits to its left and ", { strong: fifth }, " to its right — neighbours share all but one note, which is why they sound so close."],
     ],
   };
 }
 
 export function keyChordsNote(root: Note): TheoryNote {
   const key = circleKeyFor(root);
-  const tonic = formatNote(key.tonic);
+  const tonic = formatExact(key.tonic);
   const chords = diatonicChords(key);
   return {
     title: `The chords of ${tonic} major`,
     paragraphs: [
-      ["Stack every other note of the ", tonic, " major scale — ", { strong: majorScale(key).map(formatNote).join(" ") }, " — and you get a three-note chord on each degree."],
+      ["Stack every other note of the ", tonic, " major scale — ", { strong: majorScale(key).map(formatExact).join(" ") }, " — and you get a three-note chord on each degree."],
       ["The pattern never changes: major, minor, minor, major, major, minor, diminished. In ", tonic, ": ", { strong: chords.map((c) => `${c.roman} ${chordName(c)}`).join(" · ") }, "."],
       ["The window shows them as neighbours: the majors IV · I · V on top, each with its relative minor underneath, and the one diminished chord on its own."],
     ],
@@ -51,8 +51,8 @@ export function progressionNote(root: Note, presetId: string | null): TheoryNote
   const scale = majorScale(key);
   const chords = diatonicChords(key);
   const chord = (degree: number) => chordName(chords[degree - 1]);
-  const tonic = formatNote(key.tonic);
-  const pull: Paragraph = ["V → I is the strongest pull in music: V contains the 7th of the scale (", { strong: formatNote(scale[6]) }, "), a half step below home (", { strong: tonic }, "), and it wants to rise."];
+  const tonic = formatExact(key.tonic);
+  const pull: Paragraph = ["V → I is the strongest pull in music: V contains the 7th of the scale (", { strong: formatExact(scale[6]) }, "), a half step below home (", { strong: tonic }, "), and it wants to rise."];
   const preset = COMMON_PROGRESSIONS.find((p) => p.id === presetId);
   if (!preset) {
     return {

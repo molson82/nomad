@@ -40,12 +40,17 @@ test.describe("service worker updates", () => {
     if (dir) await rm(dir, { recursive: true, force: true });
   });
 
-  test("a new version waits for a tap, then takes over", async ({ page }) => {
+  test("a new version waits for a tap, then takes over in every tab", async ({ page, context }) => {
     const pill = page.getByRole("button", { name: /update ready/i });
 
     await page.goto(`${BASE}/circle/`);
     await page.waitForFunction(() => navigator.serviceWorker?.controller != null);
     await expect(pill).toHaveCount(0);
+
+    // A second tab that never taps must not be left on the old version.
+    const other = await context.newPage();
+    await other.goto(`${BASE}/scales/`);
+    await other.waitForFunction(() => navigator.serviceWorker?.controller != null);
 
     const swPath = path.join(dir, "sw.js");
     const sw = await readFile(swPath, "utf8");
@@ -59,10 +64,12 @@ test.describe("service worker updates", () => {
     await expect(pill).toBeVisible();
     await expect.poll(() => page.evaluate(() => caches.keys())).toContain(`nomad-${oldVersion}`);
 
-    // Tapping reloads the page once the new worker takes control.
+    // Tapping reloads the page, and the other tab, once the new worker takes control.
     const reloaded = page.waitForEvent("load");
+    const otherReloaded = other.waitForEvent("load");
     await pill.click();
     await reloaded;
+    await otherReloaded;
     await expect.poll(() => page.evaluate(() => caches.keys())).toEqual(["nomad-e2e000000000"]);
     await expect(pill).toHaveCount(0);
   });

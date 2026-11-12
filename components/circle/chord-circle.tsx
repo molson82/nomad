@@ -1,5 +1,5 @@
 import { chordLongName, chordName, type Chord } from "@/lib/theory/chords";
-import { formatNote } from "@/lib/theory/spelling";
+import { formatExact } from "@/lib/theory/spelling";
 
 const LABEL = "text-[11px] font-bold tracking-[0.08em] md:text-[13px] xl:text-xs";
 
@@ -71,7 +71,7 @@ export function ChordButton({ chord, size, label, labelPosition, steps, onAdd }:
         <StepBadge steps={steps} />
       </span>
       <DegreeDots degrees={chord.degrees} />
-      <span className="text-[13px] font-semibold md:text-[15px] xl:text-sm">{chord.notes.map(formatNote).join(" ")}</span>
+      <span className="text-[13px] font-semibold md:text-[15px] xl:text-sm">{chord.notes.map(formatExact).join(" ")}</span>
       {labelPosition === "bottom" && label_}
     </button>
   );

@@ -1,11 +1,11 @@
 import { circleKeyFor, majorScale } from "@/lib/theory/circle";
 import type { Note } from "@/lib/theory/notes";
 import { scaleDegrees, scaleNotes, type Tonality } from "@/lib/theory/scales";
-import { formatNote } from "@/lib/theory/spelling";
+import { formatExact, formatNote } from "@/lib/theory/spelling";
 import type { TheoryNote } from "./types";
 
 export function scaleBuildNote(root: Note, tonality: Tonality): TheoryNote {
-  const s = majorScale(circleKeyFor(root)).map(formatNote);
+  const s = majorScale(circleKeyFor(root)).map(formatExact);
   return {
     title: tonality === "major" ? `Building ${s[0]} major` : `Building ${s[5]} minor`,
     paragraphs: [
@@ -22,11 +22,13 @@ export function scaleBuildNote(root: Note, tonality: Tonality): TheoryNote {
 export function pentatonicNote(root: Note, tonality: Tonality): TheoryNote {
   const degreeNote = (type: "scale" | "blues", label: string) => {
     const view = { tonality, type };
-    return formatNote(scaleNotes(root, view)[scaleDegrees(root, view).indexOf(label)]);
+    // The blue note is a passing tone, written as players read it (E in D♭ blues, not F♭).
+    const format = type === "blues" ? formatNote : formatExact;
+    return format(scaleNotes(root, view)[scaleDegrees(root, view).indexOf(label)]);
   };
   const [dropped, first, second] =
     tonality === "major" ? ["4th and 7th", degreeNote("scale", "4"), degreeNote("scale", "7")] : ["2nd and ♭6th", degreeNote("scale", "2"), degreeNote("scale", "♭6")];
-  const pentatonic = scaleNotes(root, { tonality, type: "pentatonic" }).map(formatNote).join(" ");
+  const pentatonic = scaleNotes(root, { tonality, type: "pentatonic" }).map(formatExact).join(" ");
   return {
     title: "Pentatonic and blues",
     paragraphs: [

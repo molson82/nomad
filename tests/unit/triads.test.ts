@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { parseTriadSelection, resolveTriad, selectionFor } from "@/lib/chords/triad-store";
-import { TUNING, triad } from "@/lib/theory/fretboard";
-import { triadsOn } from "@/lib/theory/triads";
-import { TUNING_PRESETS, openPitches } from "@/lib/theory/tuning";
+import { triad } from "@/lib/theory/fretboard";
+import { NOTES } from "@/lib/theory/notes";
+import { pitchClassOf } from "@/lib/theory/spelling";
+import { INVERSIONS, STRING_SETS, triadsOn } from "@/lib/theory/triads";
+import { STANDARD_OFFSETS, TUNING_PRESETS, openPitches } from "@/lib/theory/tuning";
 
 const dadgad = openPitches(TUNING_PRESETS.find((p) => p.id === "dadgad")!.offsets);
 const d = triad("D");
@@ -23,7 +25,35 @@ describe("triadsOn", () => {
     expect(list(2, openPitches([0, 0, 0, -5, 3, 0]))).toEqual([]);
   });
   it("works in standard tuning: D on G 7, F♯ on B 7, A on E 5", () => {
-    expect(list(3, TUNING)).toContain("root 7-7-5");
+    expect(list(3, openPitches(STANDARD_OFFSETS))).toContain("root 7-7-5");
+  });
+  it("names the inversion from the lowest sounding note when strings cross", () => {
+    // 6th up 4 (G♯2), 5th down 5 (E2): C major frets 4-3-2 on 6–5–4 sounds C3 G2 E3, so G is the bass.
+    const crossed = triadsOn(triad("C"), "major", openPitches([4, -5, 0, 0, 0, 0]), 0);
+    expect(crossed.find((t) => t.frets.join("-") === "4-3-2")!.inversion).toBe("second");
+  });
+  it.each([
+    [[4, -5, 0, 0, 0, 0]],
+    [[0, 0, 0, 0, -4, 0]],
+  ])("labels every triad by its lowest pitch in custom tuning %j", (offsets) => {
+    const open = openPitches(offsets);
+    let checked = 0;
+    for (const name of NOTES) {
+      for (const quality of ["major", "minor"] as const) {
+        // triad(root, "minor") is the relative minor; spell the chord from its own root.
+        const chord = triad(name, quality);
+        for (const set of STRING_SETS) {
+          for (const t of triadsOn(chord, quality, open, set)) {
+            const sounding = t.frets.map((fret, i) => open[set + i] + fret);
+            const lowest = sounding.indexOf(Math.min(...sounding));
+            const tone = chord.findIndex((n) => pitchClassOf(n) === ((sounding[lowest] % 12) + 12) % 12);
+            expect(t.inversion).toBe(INVERSIONS[tone]);
+            checked++;
+          }
+        }
+      }
+    }
+    expect(checked).toBeGreaterThan(0);
   });
 });
 

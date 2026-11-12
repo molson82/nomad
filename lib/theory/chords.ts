@@ -1,5 +1,5 @@
 import { majorScale, type CircleKey } from "./circle";
-import { formatNote, mod, type SpelledNote } from "./spelling";
+import { formatExact, mod, type SpelledNote } from "./spelling";
 
 export type ChordQuality = "maj" | "min" | "dim";
 
@@ -36,11 +36,11 @@ export function diatonicChords(key: CircleKey): Chord[] {
 }
 
 export function chordName(chord: Chord): string {
-  return formatNote(chord.root) + SUFFIX[chord.quality];
+  return formatExact(chord.root) + SUFFIX[chord.quality];
 }
 
 export function chordLongName(chord: Chord): string {
-  return `${formatNote(chord.root)} ${QUALITY_NAME[chord.quality]}`;
+  return `${formatExact(chord.root)} ${QUALITY_NAME[chord.quality]}`;
 }
 
 export function romanFor(degree: number): string {
@@ -58,7 +58,7 @@ export type ProgressionPreset = { id: string; name: string; degrees: readonly nu
 
 export const COMMON_PROGRESSIONS: readonly ProgressionPreset[] = [
   { id: "pop", name: "Pop", degrees: [1, 5, 6, 4] },
-  { id: "ii-v-i", name: "Jazz turnaround", degrees: [2, 5, 1] },
+  { id: "ii-v-i", name: "Jazz cadence", degrees: [2, 5, 1] },
   { id: "i-iv-v", name: "Three-chord", degrees: [1, 4, 5] },
   { id: "vi-iv-i-v", name: "Sensitive", degrees: [6, 4, 1, 5] },
   { id: "fifties", name: "50s", degrees: [1, 6, 4, 5] },

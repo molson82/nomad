@@ -1,5 +1,3 @@
-import { TUNING } from "./fretboard";
-
 // A tuning is six semitone offsets from standard, low string → high string.
 export type TuningOffsets = readonly number[];
 export type TuningPreset = { id: string; name: string; offsets: TuningOffsets };
@@ -25,8 +23,12 @@ const PITCH_NAMES = ["C", "D♭", "D", "E♭", "E", "F", "F♯", "G", "A♭", "A
 
 export const pitchName = (pitch: number) => PITCH_NAMES[((pitch % 12) + 12) % 12];
 
+// Standard tuning as MIDI pitches (E2 A2 D3 G3 B3 E4), so the octave of each string is kept.
+const STANDARD_PITCHES = [40, 45, 50, 55, 59, 64];
+
+// Absolute open-string pitches; consumers that only need the note take `% 12`.
 export function openPitches(t: TuningOffsets): number[] {
-  return TUNING.map((open, s) => (((open + t[s]) % 12) + 12) % 12);
+  return STANDARD_PITCHES.map((open, s) => open + t[s]);
 }
 
 // For a neck's string labels; `changed` marks a string retuned from standard.

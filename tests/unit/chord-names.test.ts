@@ -44,8 +44,51 @@ describe("chordNames", () => {
 
   it("spells for a key when given one", () => {
     const shape = [4, 6, 4, 4, 4, 4];
-    expect(names(shape)[0]).toBe("A♭m7");
+    expect(names(shape)[0]).toBe("G♯m7");
     expect(names(shape, undefined, circleKeyFor("B"))[0]).toBe("G♯m7");
+  });
+
+  it("spells the root by quality with no key", () => {
+    const gsm = voicingOf([4, 6, 6, 4, 4, 4])!;
+    expect(chordNames(gsm)[0].text).toBe("G♯m");
+    expect(noteList(gsm, chordNames(gsm)[0])).toEqual(["G♯", "B", "D♯"]);
+    const db = voicingOf([null, 4, 3, 1, 2, 1])!;
+    expect(chordNames(db)[0].text).toBe("D♭");
+    expect(noteList(db, chordNames(db)[0])).toEqual(["D♭", "F", "A♭"]);
+    expect(names([null, 4, 6, 6, 5, 4])[0]).toBe("C♯m");
+    expect(names([4, 6, 6, 5, 4, 4])[0]).toBe("A♭");
+  });
+
+  it("keeps the fixed names for a single note", () => {
+    expect(names([4, null, null, null, null, null])).toEqual(["A♭"]);
+    expect(names([null, 4, null, null, null, null])).toEqual(["C♯"]);
+  });
+
+  it("prefers a 7th chord over a 6th when the root is not in the bass", () => {
+    expect(names([0, 0, 2, 0, 1, 0]).slice(0, 2)).toEqual(["Am7/E", "C6/E"]);
+    expect(names([5, 7, 5, 5, 5, 5])[0]).toBe("Am7");
+    expect(names([null, 3, 2, 2, 1, 3])[0]).toBe("C6");
+  });
+
+  it("names a third or sixth as the triad it implies", () => {
+    expect(names([null, 3, 2, null, null, null])).toEqual(["C(no5)"]);
+    expect(names([null, 0, null, null, 1, null])).toEqual(["Am(no5)"]);
+    expect(names([0, 3, null, null, null, null])).toEqual(["C(no5)/E"]);
+    expect(names([null, 3, null, 2, null, null])).toEqual(["Am(no5)/C"]);
+  });
+
+  it("names maj7♯11, add11, m6/9 and maj13", () => {
+    expect(names([null, null, 3, 2, 0, 0])[0]).toBe("Fmaj7♯11");
+    expect(names([null, 3, 2, 0, 1, 1])[0]).toBe("Cadd11");
+    expect(names([null, 3, 1, 2, 3, 3])[0]).toBe("Cm6/9");
+    expect(names([null, 3, 2, 2, 0, 0])[0]).toBe("Cmaj13");
+  });
+
+  it("spells the true letter in names and note lists", () => {
+    const fs = voicingOf([2, 4, 3, 3, 2, 2])!;
+    expect(noteList(fs, chordNames(fs)[0])).toEqual(["F♯", "A♯", "C♯", "E♯"]);
+    expect(names([null, null, 3, 4, 4, 4], undefined, circleKeyFor("F#"))[0]).toBe("E♯m7♭5");
+    expect(names([null, 8, 7, 5, 6, null], undefined, circleKeyFor("F#"))[0]).toBe("F"); // not E♯ with G♯♯
   });
 
   it("never returns more than 5", () => {
@@ -99,7 +142,7 @@ describe("noteList", () => {
     const dim = voicingOf([null, 6, 4, 2, null, null])!;
     expect(noteList(dim, chordNames(dim)[0])).toEqual(["E♭", "G♭", "A"]);
     const aug = voicingOf([null, 4, 3, 2, 2, null])!;
-    expect(noteList(aug, chordNames(aug)[0])).toEqual(["C♯", "F", "A"]);
+    expect(noteList(aug, chordNames(aug)[0])).toEqual(["D♭", "F", "A"]);
   });
 
   it("falls back to the app's note names with no chord name", () => {

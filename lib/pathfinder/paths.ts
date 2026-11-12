@@ -2,7 +2,7 @@ import { nearestByCentre } from "@/lib/chords/neck-geometry";
 import { FRET_WINDOWS, notesInWindow } from "@/lib/scales/window-store";
 import { cagedShapesFor } from "@/lib/theory/caged";
 import { chordNames, noteLabel, spellRoot, voicingOf, type ChordName, type Frets, type Voicing } from "@/lib/theory/chord-names";
-import { COMMON_PROGRESSIONS, chordName, diatonicChords, romanFor } from "@/lib/theory/chords";
+import { COMMON_PROGRESSIONS, chordName, diatonicChords, type Chord } from "@/lib/theory/chords";
 import { CIRCLE, circleKeyFor, majorScale } from "@/lib/theory/circle";
 import type { ChordTone, Quality } from "@/lib/theory/fretboard";
 import { NOTES, type Note } from "@/lib/theory/notes";
@@ -49,12 +49,13 @@ export function keysFor(v: Voicing, name: ChordName | null): KeyFit[] {
     const scale = majorScale(k).map(pitchClassOf);
     const outside = v.pitchClasses.filter((pc) => !scale.includes(pc));
     const index = name ? scale.indexOf(name.root) : -1;
+    const diatonic = index < 0 ? null : diatonicChords(k)[index];
     return {
       key: NOTES[k.pitchClass],
       fit: outside.length === 0 ? "full" : "near",
       outside: outside.map((pc) => noteLabel(pc, name, k)),
       degree: index < 0 ? null : index + 1,
-      role: index < 0 ? null : romanFor(index + 1),
+      role: diatonic && name && matchesTriad(v, name.root, diatonic) ? diatonic.roman : null,
     };
   });
   const byRole = (a: KeyFit, b: KeyFit) => rolePlace(a) - rolePlace(b);
@@ -65,6 +66,19 @@ export function keysFor(v: Voicing, name: ChordName | null): KeyFit[] {
     .filter((k) => k.outside.length === fewest)
     .sort(byRole)
     .slice(0, MAX_NEAR_KEYS);
+}
+
+// The role is the diatonic triad's numeral, so the chord has to sound like that triad: its third (when it
+// has one) must be the triad's third, a fifth it has must not be altered, and vii° needs its ♭5. A power
+// chord (root and fifth only) has no third to disagree with and keeps its role; a sus chord, or anything
+// else with no third, gets none. `degree` stays either way: pairings and progressions build on it.
+function matchesTriad(v: Voicing, root: number, triad: Chord): boolean {
+  const has = (interval: number) => v.pitchClasses.includes(mod(root + interval, 12));
+  const [third, fifth] = triad.notes.slice(1).map((n) => mod(pitchClassOf(n) - root, 12));
+  const hasThird = has(3) || has(4);
+  if (hasThird ? !has(third) : !v.pitchClasses.every((pc) => pc === root || pc === mod(root + 7, 12))) return false;
+  if (triad.quality === "dim") return has(fifth);
+  return has(fifth) || !(has(6) || has(8));
 }
 
 const rolePlace = (k: KeyFit) => (k.degree === null ? CENTRAL_FIRST.length : CENTRAL_FIRST.indexOf(k.degree));

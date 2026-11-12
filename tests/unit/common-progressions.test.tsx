@@ -12,7 +12,7 @@ describe("CommonProgressions", () => {
   it("picks a preset by id", () => {
     const onPick = vi.fn();
     render(<CommonProgressions root="C" activeId={null} onPick={onPick} />);
-    fireEvent.click(screen.getByRole("button", { name: /Jazz turnaround/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Jazz cadence/ }));
     expect(onPick).toHaveBeenCalledWith("ii-v-i");
   });
 });

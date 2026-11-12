@@ -24,6 +24,12 @@ describe("scaleBuildNote", () => {
     expect(text(note)[2]).toBe("Minor starts the same notes from ⑥ (E) and renumbers, so its 3rd, 6th and 7th come out flat: ♭3 ♭6 ♭7.");
   });
 
+  it("writes F♯ major's 7th as E♯", () => {
+    expect(text(scaleBuildNote("F#", "major"))[1]).toBe(
+      "From F♯: F♯ – G♯ – A♯ – B – C♯ – D♯ – E♯ – F♯. The half steps fall at A♯–B and E♯–F♯.",
+    );
+  });
+
   it("spells D♭ with flats", () => {
     expect(text(scaleBuildNote("C#", "major"))[1]).toBe(
       "From D♭: D♭ – E♭ – F – G♭ – A♭ – B♭ – C – D♭. The half steps fall at F–G♭ and C–D♭.",

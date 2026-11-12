@@ -24,6 +24,14 @@ export function createPersistedStore<T>(
     }
   }
 
+  // One listener per store, shared by every subscriber. A null key means another tab cleared storage.
+  function onStorage(event: StorageEvent) {
+    if (event.key === key) state = parse(event.newValue);
+    else if (event.key === null) state = load();
+    else return;
+    listeners.forEach((listener) => listener());
+  }
+
   return {
     get: () => (state ??= load()),
     getServer: () => fallback,
@@ -37,16 +45,11 @@ export function createPersistedStore<T>(
       listeners.forEach((listener) => listener());
     },
     subscribe(listener) {
+      if (listeners.size === 0) window.addEventListener("storage", onStorage);
       listeners.add(listener);
-      const onStorage = (event: StorageEvent) => {
-        if (event.key !== key) return;
-        state = parse(event.newValue);
-        listener();
-      };
-      window.addEventListener("storage", onStorage);
       return () => {
         listeners.delete(listener);
-        window.removeEventListener("storage", onStorage);
+        if (listeners.size === 0) window.removeEventListener("storage", onStorage);
       };
     },
   };

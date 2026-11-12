@@ -44,6 +44,35 @@ describe("keysFor", () => {
     const a5 = voicingOf([5, 7, null, null, null, null])!;
     expect(keysFor(a5, chordNames(a5)[0]).map((k) => k.role).slice(0, 3)).toEqual(["I", "IV", "V"]);
   });
+
+  const roles = (frets: (number | null)[]) => {
+    const v = voicingOf(frets)!;
+    return Object.fromEntries(keysFor(v, chordNames(v)[0]).map((k) => [k.key, k.role]));
+  };
+
+  it("gives a major triad its role where the degree is major", () => {
+    expect(roles([null, 3, 2, 0, 1, 0])).toEqual({ C: "I", G: "IV", F: "V" });
+  });
+
+  it("gives no role where the chord's third contradicts the degree", () => {
+    expect(roles([null, 3, 1, 0, 0, 3])).toMatchObject({ C: null, G: null }); // Cm(maj7)
+  });
+
+  it("needs the diminished fifth for vii°, but not a fifth elsewhere", () => {
+    // Cm7 without its 5th
+    expect(roles([null, 3, null, 3, 4, null])).toEqual({ Eb: "vi", Bb: "ii", Ab: "iii", "C#": null });
+  });
+
+  it("gives a sus chord no role", () => {
+    const keys = roles([null, 3, 3, 0, 1, 1]); // Csus4
+    expect(Object.keys(keys).length).toBeGreaterThan(0);
+    expect(Object.values(keys).every((r) => r === null)).toBe(true);
+  });
+
+  it("keeps the degree when the role is dropped", () => {
+    const v = voicingOf([null, 3, 3, 0, 1, 1])!;
+    expect(keysFor(v, chordNames(v)[0]).map((k) => [k.key, k.degree])[0]).toEqual(["C", 1]);
+  });
 });
 
 describe("keyDetails", () => {
@@ -115,7 +144,7 @@ describe("chordsToTry", () => {
 describe("progressionFor", () => {
   it("finds one containing the degree, starting on it when one does", () => {
     expect(progressionFor("C", 6)).toEqual({ name: "Sensitive", chords: ["Am", "F", "C", "G"] });
-    expect(progressionFor("C", 2)).toEqual({ name: "Jazz turnaround", chords: ["Dm", "G", "C"] });
+    expect(progressionFor("C", 2)).toEqual({ name: "Jazz cadence", chords: ["Dm", "G", "C"] });
     expect(progressionFor("F", 3)).toBeNull();
     expect(progressionFor("C", null)).toBeNull();
   });

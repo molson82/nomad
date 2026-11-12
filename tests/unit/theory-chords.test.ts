@@ -19,7 +19,7 @@ describe("diatonicChords", () => {
     expect(names("G")).toBe("G Am Bm C D Em F♯°");
     expect(names("F")).toBe("F Gm Am B♭ C Dm E°");
     expect(names("D♭")).toBe("D♭ E♭m Fm G♭ A♭ B♭m C°");
-    expect(names("F♯")).toBe("F♯ G♯m A♯m B C♯ D♯m F°"); // vii° shown as F°, not E♯°
+    expect(names("F♯")).toBe("F♯ G♯m A♯m B C♯ D♯m E♯°"); // E♯°, not F°
   });
 
   it("builds each triad from degrees d, d+2, d+4 wrapped into 1–7", () => {
@@ -58,7 +58,7 @@ describe("Decoder layout and progressions", () => {
   it("ships the five agreed presets", () => {
     expect(COMMON_PROGRESSIONS.map((p) => [p.id, p.name, progressionLabel(p.degrees)])).toEqual([
       ["pop", "Pop", "I–V–vi–IV"],
-      ["ii-v-i", "Jazz turnaround", "ii–V–I"],
+      ["ii-v-i", "Jazz cadence", "ii–V–I"],
       ["i-iv-v", "Three-chord", "I–IV–V"],
       ["vi-iv-i-v", "Sensitive", "vi–IV–I–V"],
       ["fifties", "50s", "I–vi–IV–V"],

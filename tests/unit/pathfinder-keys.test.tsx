@@ -1,12 +1,18 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { KeysScreen } from "@/components/pathfinder/keys-screen";
+import { keyDetails } from "@/lib/pathfinder/paths";
 import { DEFAULT_STATE, getKeyState, updateKeyState } from "@/lib/key-state/store";
 import { EMPTY_STATE } from "@/lib/pathfinder/state";
 import { pathfinderStore } from "@/lib/pathfinder/store";
 import type { Frets } from "@/lib/theory/chord-names";
 import { STANDARD_OFFSETS, TUNING_PRESETS } from "@/lib/theory/tuning";
 import { tuningStore } from "@/lib/tuning/tuning-store";
+
+vi.mock("@/lib/pathfinder/paths", async (importOriginal) => {
+  const paths = await importOriginal<typeof import("@/lib/pathfinder/paths")>();
+  return { ...paths, keyDetails: vi.fn(paths.keyDetails) };
+});
 
 const AM7 = [5, 7, 5, 5, 5, 5];
 const show = (frets: Frets, props: Partial<Parameters<typeof KeysScreen>[0]> = {}) => {
@@ -132,5 +138,14 @@ describe("KeysScreen", () => {
   it("opens on the key it's told to", () => {
     show(AM7, { initialKey: "G" });
     expect(card(/^G major/).getAttribute("aria-pressed")).toBe("true");
+  });
+
+  it("works out each key's details once, not on every mode or key tap", () => {
+    show(AM7);
+    const calls = vi.mocked(keyDetails).mock.calls.length;
+    expect(calls).toBeGreaterThan(0);
+    fireEvent.click(screen.getByRole("button", { name: "Scale" }));
+    fireEvent.click(card(/^G major/));
+    expect(vi.mocked(keyDetails).mock.calls.length).toBe(calls);
   });
 });

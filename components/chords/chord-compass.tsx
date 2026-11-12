@@ -176,7 +176,7 @@ export function ChordCompass() {
             <TriadFocusCard triad={triadNow} triads={triads} chordName={chordName} onStep={stepTriad} rings={highlight?.rings} />
           ) : (
             <p className="rounded-[22px] border border-border bg-surface p-4 text-sm text-text-secondary">
-              No triad of {chordName} fits within four frets on any three strings in this tuning.
+              No triad of {chordName} fits a four-fret stretch on any three strings in this tuning.
             </p>
           )}
         </div>

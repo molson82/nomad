@@ -98,9 +98,18 @@ describe("highlightFrets", () => {
     expect(highlightFrets(lock(), "C", std)).toEqual(AM7);
   });
 
-  it("wraps a note an octave to stay on the neck", () => {
-    expect(highlightFrets(lock({ frets: [0, 2, 2, null, null, null] }), "B", std)).toEqual([11, 1, 1, null, null, null]);
-    expect(highlightFrets(lock({ frets: [15, 13, null, null, null, null] }), "D", std)).toEqual([5, 15, null, null, null, null]);
+  it("moves the whole chord an octave to stay on the neck", () => {
+    expect(highlightFrets(lock({ frets: [0, 2, 2, null, null, null] }), "B", std)).toEqual([11, 13, 13, null, null, null]);
+    expect(highlightFrets(lock({ frets: [15, 13, null, null, null, null] }), "D", std)).toEqual([5, 3, null, null, null, null]);
+  });
+
+  it("keeps a locked chord in one piece in a new key", () => {
+    expect(highlightFrets(lock({ frets: [null, 3, 2, 0, 1, 0] }), "A", std)).toEqual([null, 12, 11, 9, 10, 9]);
+  });
+
+  it("wraps string by string only when no octave fits the whole chord", () => {
+    const frets = [0, null, null, null, null, 15];
+    expect(highlightFrets(lock({ frets }), "C", [4, 0, 0, 0, 0, -5])).toEqual([8, null, null, null, null, 8]);
   });
 
   it("keeps pitch when the tuning changes", () => {

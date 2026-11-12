@@ -17,6 +17,13 @@ describe("ScaleHeader", () => {
     expect(screen.getByText("Relative of G major (⑥)")).toBeInTheDocument();
   });
 
+  it("lists F♯ major with its E♯, but keeps the blue note as players read it", () => {
+    const { rerender } = render(<ScaleHeader root="F#" view={{ tonality: "major", type: "scale" }} onStep={() => {}} />);
+    expect(screen.getByText("F♯ G♯ A♯ B C♯ D♯ E♯")).toBeInTheDocument();
+    rerender(<ScaleHeader root="C#" view={{ tonality: "major", type: "blues" }} onStep={() => {}} />);
+    expect(screen.getByText("D♭ E♭ E F A♭ B♭")).toBeInTheDocument();
+  });
+
   it("steps the root", () => {
     const onStep = vi.fn();
     render(<ScaleHeader root="G" view={{ tonality: "major", type: "scale" }} onStep={onStep} />);

@@ -27,8 +27,11 @@ export function spellAs(letter: Letter, pitchClass: number): SpelledNote {
 const PLAIN: Record<string, string> = { "E1": "F", "B1": "C", "F-1": "E", "C-1": "B" };
 
 export function formatNote(note: SpelledNote): string {
-  const plain = PLAIN[`${note.letter}${note.accidental}`];
-  if (plain) return plain;
+  return PLAIN[`${note.letter}${note.accidental}`] ?? formatExact(note);
+}
+
+// The true letter (E♯, B♯, C♭, F♭), for scale lists, chord names and theory text, where F♯ major needs its E♯.
+export function formatExact(note: SpelledNote): string {
   const glyphs = note.accidental > 0 ? "♯".repeat(note.accidental) : "♭".repeat(-note.accidental);
   return note.letter + glyphs;
 }
