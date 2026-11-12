@@ -29,12 +29,19 @@ To test offline behavior by hand, use `pnpm build && pnpm preview`, never `pnpm 
 
 ## Deployment
 
-Hosted on **Vercel** through its GitHub integration — there is no `vercel.json`; project settings live in
-the Vercel dashboard.
+Hosted on **Vercel** through its GitHub integration. Build and project settings live in the Vercel
+dashboard; `vercel.json` holds only response `headers` (`X-Content-Type-Options`, `Referrer-Policy`, and a
+`Content-Security-Policy` that allows only same-origin resources plus `'unsafe-inline'` scripts/styles, which
+Next's inline bootstrap needs, and `data:` images). Don't add build settings to it — they would override the
+dashboard.
+
+- The CSP may block Vercel's toolbar / comments script on Preview deployments; that's expected. Anything new
+  loaded from another origin (fonts, analytics, a CDN) needs a CSP change in `vercel.json`.
 
 - Every commit on a PR gets a **Preview** deployment (the PR's "Vercel" and "Vercel Preview Comments"
   checks); every merge to `main` deploys **Production**. CI (`.github/workflows/ci.yml`) still only tests —
-  it doesn't deploy.
+  it doesn't deploy. Its actions are pinned to commit SHAs (with a `# vX` comment); Dependabot
+  (`.github/dependabot.yml`) proposes npm and action updates weekly.
 - Deployment URLs are behind Vercel Authentication, so open them while signed in to Vercel.
 - Offline support depends on the full `pnpm build` (it runs `scripts/build-sw.mjs` after `next build`). To
   confirm a deployment ran it, open `/sw.js` on it: it should start with `const PRECACHE = [` and contain
